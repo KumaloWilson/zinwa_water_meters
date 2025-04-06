@@ -363,7 +363,6 @@ export async function up(queryInterface: QueryInterface, Sequelize: any) {
     propertyType: {
       type: DataTypes.ENUM(...Object.values(PropertyType)),
       allowNull: false,
-      unique: true,
     },
     ratePerUnit: {
       type: DataTypes.FLOAT,

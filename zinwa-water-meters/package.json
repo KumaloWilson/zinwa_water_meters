@@ -9,7 +9,8 @@
     "watch": "nodemon --exec ts-node src/app.ts",
     "lint": "eslint . --ext .ts",
     "test": "jest",
-    "migrate": "ts-node src/config/database.ts"
+    "migrate": "ts-node src/config/database.ts",
+    "seed": "ts-node src/scripts/seed.ts"
   },
   "keywords": [],
   "author": "Wilson Kumalo",
