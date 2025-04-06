@@ -3,6 +3,11 @@ import { User, Property, Token, Payment, MeterReading, type PropertyType, Paymen
 import { logger } from "../utils/logger"
 import { Op, fn, col, literal } from "sequelize"
 
+// Define interfaces for our aggregate query results
+interface AggregateResult {
+  total: string | number | null
+}
+
 // Customer dashboard
 export const getCustomerDashboard = async (req: Request, res: Response) => {
   try {
@@ -189,30 +194,32 @@ export const getAdminDashboard = async (req: Request, res: Response) => {
       where: propertyWhereClause,
     })
 
-    // Get total revenue
-    const totalRevenue =
-      (await Payment.findAll({
-        attributes: [[fn('sum', col('amount')), 'total']],
-        where: {
-          status: PaymentStatus.COMPLETED,
-          createdAt: {
-            [Op.between]: [startDate, endDate],
-          },
+    // Get total revenue - using findAll with aggregate
+    const revenueResult = (await Payment.findAll({
+      attributes: [[fn("sum", col("amount")), "total"]],
+      where: {
+        status: PaymentStatus.COMPLETED,
+        createdAt: {
+          [Op.between]: [startDate, endDate],
         },
-        include: [
-          {
-            model: Property,
-            as: "property",
-            where: propertyWhereClause,
-            required: true,
-          },
-        ],
-        raw: true,
-      }).then((result: any) => result[0]?.total || 0))
+      },
+      include: [
+        {
+          model: Property,
+          as: "property",
+          where: propertyWhereClause,
+          required: true,
+          attributes: [],
+        },
+      ],
+      raw: true,
+    })) as unknown as AggregateResult[]
 
-    // Get total consumption
-    const totalConsumption = await MeterReading.findAll({
-      attributes: [[fn('sum', col('consumption')), 'total']],
+    const totalRevenue = revenueResult[0]?.total ? Number(revenueResult[0].total) : 0
+
+    // Get total consumption - using findAll with aggregate
+    const consumptionResult = (await MeterReading.findAll({
+      attributes: [[fn("sum", col("consumption")), "total"]],
       where: {
         readingDate: {
           [Op.between]: [startDate, endDate],
@@ -224,10 +231,13 @@ export const getAdminDashboard = async (req: Request, res: Response) => {
           as: "property",
           where: propertyWhereClause,
           required: true,
+          attributes: [],
         },
       ],
       raw: true,
-    }).then((result: any) => result[0]?.total || 0)
+    })) as unknown as AggregateResult[]
+
+    const totalConsumption = consumptionResult[0]?.total ? Number(consumptionResult[0].total) : 0
 
     // Get revenue by property type
     const revenueByPropertyType = await Payment.findAll({
