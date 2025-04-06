@@ -16,7 +16,6 @@ export class Rate extends Model {
   @Column({
     type: DataType.ENUM(...Object.values(PropertyType)),
     allowNull: false,
-    unique: true,
   })
   propertyType!: PropertyType
 
