@@ -20,6 +20,7 @@ import tokenRoutes from "./routes/tokenRoutes"
 import paymentRoutes from "./routes/paymentRoutes"
 import dashboardRoutes from "./routes/dashboardRoutes"
 import adminRoutes from "./routes/adminRoutes"
+import notificationRoutes from "./routes/notificationRoutes"
 import { logger } from "./utils/logger"
 
 // Load environment variables
@@ -81,6 +82,7 @@ app.use("/api/tokens", tokenRoutes)
 app.use("/api/payments", paymentRoutes)
 app.use("/api/dashboard", dashboardRoutes)
 app.use("/api/admin", adminRoutes)
+app.use("/api/notifications", notificationRoutes)
 
 // Health check endpoint
 app.get("/health", (req: Request, res: Response) => {
