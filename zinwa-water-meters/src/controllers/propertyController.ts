@@ -80,6 +80,7 @@ export const getAllProperties = async (req: Request, res: Response) => {
     const limit = Number.parseInt(req.query.limit as string) || 10
     const offset = (page - 1) * limit
     const search = req.query.search as string
+    const city = req.query.city as string
     const propertyType = req.query.propertyType as PropertyType
 
     let whereClause: any = {}
@@ -97,6 +98,10 @@ export const getAllProperties = async (req: Request, res: Response) => {
 
     if (propertyType) {
       whereClause.propertyType = propertyType
+    }
+
+    if (city) {
+      whereClause.city = city
     }
 
     const { count, rows } = await Property.findAndCountAll({
