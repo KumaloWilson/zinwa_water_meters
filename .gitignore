@@ -1,0 +1,8 @@
+node_modules
+client/node_modules
+zinwa-water-meters/node_modules
+client/dist/
+zinwa-water-meters/dist/
+client/.env
+zinwa-water-meters/.env
+*.log

@@ -1,0 +1,434 @@
+openapi: 3.0.0
+info:
+  title: ZINWA Water Meter System API
+  description: API documentation for the ZINWA Water Meter System
+  version: 1.0.0
+  contact:
+    email: info@zinwa.co.zw
+servers:
+  - url: http://localhost:5000/api
+    description: Development server
+  - url: https://api.zinwa.co.zw/api
+    description: Production server
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        phoneNumber:
+          type: string
+        address:
+          type: string
+        nationalId:
+          type: string
+        role:
+          type: string
+          enum: [customer, admin, super_admin]
+        isVerified:
+          type: boolean
+        lastLogin:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    Property:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        propertyName:
+          type: string
+        address:
+          type: string
+        meterNumber:
+          type: string
+        propertyType:
+          type: string
+          enum: [residential_low_density, residential_high_density, commercial, industrial, agricultural]
+        currentBalance:
+          type: number
+        totalConsumption:
+          type: number
+        isActive:
+          type: boolean
+        city:
+          type: string
+        province:
+          type: string
+        postalCode:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+        lastTokenPurchase:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    Token:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        propertyId:
+          type: string
+          format: uuid
+        paymentId:
+          type: string
+          format: uuid
+        tokenValue:
+          type: string
+        units:
+          type: number
+        amount:
+          type: number
+        isUsed:
+          type: boolean
+        usedAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    Payment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        propertyId:
+          type: string
+          format: uuid
+        referenceNumber:
+          type: string
+        amount:
+          type: number
+        status:
+          type: string
+          enum: [pending, completed, failed, refunded]
+        paymentMethod:
+          type: string
+          enum: [paynow, bank_transfer, cash, other]
+        transactionId:
+          type: string
+        pollUrl:
+          type: string
+        paymentDetails:
+          type: object
+        paidAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    MeterReading:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        propertyId:
+          type: string
+          format: uuid
+        reading:
+          type: number
+        consumption:
+          type: number
+        readingDate:
+          type: string
+          format: date-time
+        isEstimated:
+          type: boolean
+        notes:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    Rate:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        propertyType:
+          type: string
+          enum: [residential_low_density, residential_high_density, commercial, industrial, agricultural]
+        ratePerUnit:
+          type: number
+        fixedCharge:
+          type: number
+        minimumCharge:
+          type: number
+        isActive:
+          type: boolean
+        effectiveDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        description:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        title:
+          type: string
+        message:
+          type: string
+        type:
+          type: string
+          enum: [payment, token, balance, system]
+        isRead:
+          type: boolean
+        link:
+          type: string
+        metadata:
+          type: object
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+paths:
+  /auth/register:
+    post:
+      summary: Register a new user
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - firstName
+                - lastName
+                - email
+                - password
+                - phoneNumber
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+                phoneNumber:
+                  type: string
+                address:
+                  type: string
+                nationalId:
+                  type: string
+      responses:
+        '201':
+          description: User registered successfully
+        '400':
+          description: Validation error or user already exists
+        '500':
+          description: Server error
+  /auth/login:
+    post:
+      summary: Login user
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+      responses:
+        '200':
+          description: Login successful
+        '401':
+          description: Invalid credentials
+        '500':
+          description: Server error
+  /auth/me:
+    get:
+      summary: Get current user
+      tags:
+        - Authentication
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Current user information
+        '401':
+          description: Authentication required
+        '500':
+          description: Server error
+  /tokens/purchase:
+    post:
+      summary: Purchase a token
+      tags:
+        - Tokens
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - propertyId
+                - amount
+              properties:
+                propertyId:
+                  type: string
+                  format: uuid
+                amount:
+                  type: number
+      responses:
+        '200':
+          description: Payment initiated successfully
+        '400':
+          description: Validation error
+        '401':
+          description: Authentication required
+        '403':
+          description: Access denied
+        '404':
+          description: Property not found
+        '500':
+          description: Server error
+  /dashboard/customer:
+    get:
+      summary: Get customer dashboard data
+      tags:
+        - Dashboard
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: startDate
+          schema:
+            type: string
+            format: date
+          description: Start date for filtering data
+        - in: query
+          name: endDate
+          schema:
+            type: string
+            format: date
+          description: End date for filtering data
+      responses:
+        '200':
+          description: Customer dashboard data
+        '401':
+          description: Authentication required
+        '500':
+          description: Server error
+  /dashboard/admin:
+    get:
+      summary: Get admin dashboard data
+      tags:
+        - Dashboard
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: startDate
+          schema:
+            type: string
+            format: date
+          description: Start date for filtering data
+        - in: query
+          name: endDate
+          schema:
+            type: string
+            format: date
+          description: End date for filtering data
+        - in: query
+          name: propertyType
+          schema:
+            type: string
+            enum: [residential_low_density, residential_high_density, commercial, industrial, agricultural]
+          description: Filter by property type
+      responses:
+        '200':
+          description: Admin dashboard data
+        '401':
+          description: Authentication required
+        '403':
+          description: Admin access required
+        '500':
+          description: Server error
+
