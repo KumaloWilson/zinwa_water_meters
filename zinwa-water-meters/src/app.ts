@@ -5,7 +5,7 @@ import cors from "cors"
 import helmet from "helmet"
 import morgan from "morgan"
 import { rateLimit } from "express-rate-limit"
-//import { createClient } from "ioredis"
+// import { createClient } from "ioredis"
 import { RedisStore } from "rate-limit-redis"
 import swaggerUi from "swagger-ui-express"
 import YAML from "yamljs"
@@ -29,12 +29,12 @@ dotenv.config()
 const app: Application = express()
 const PORT = process.env.PORT || 5000
 
-// Redis client for rate limiting
+// // Redis client for rate limiting
 // const redisClient = createClient({
 //   url: process.env.REDIS_URL || "redis://localhost:6379",
 // })
 
-// Connect to Redis
+// // Connect to Redis
 // redisClient.on("error", (err) => logger.error("Redis error:", err))
 // redisClient.connect().catch(console.error)
 
@@ -95,6 +95,9 @@ app.use((req: Request, res: Response) => {
 // Global error handler
 app.use(errorHandler)
 
+// Import the seeder
+import { seedDatabase } from "./utils/seeder"
+
 // Database connection and server start
 const startServer = async () => {
   try {
@@ -105,6 +108,11 @@ const startServer = async () => {
     if (process.env.NODE_ENV === "development") {
       await sequelize.sync({ alter: true })
       logger.info("Database models synchronized")
+
+      // Seed the database if SEED_DB environment variable is set
+      if (process.env.SEED_DB === "true") {
+        await seedDatabase()
+      }
     }
 
     app.listen(PORT, () => {
