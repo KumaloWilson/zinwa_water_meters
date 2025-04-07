@@ -6,9 +6,7 @@ class MeterReading {
   final DateTime readingDate;
   final String? notes;
   final String? imageUrl;
-  final bool isVerified;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  final bool isEstimated;
 
   MeterReading({
     required this.id,
@@ -18,9 +16,7 @@ class MeterReading {
     required this.readingDate,
     this.notes,
     this.imageUrl,
-    required this.isVerified,
-    required this.createdAt,
-    required this.updatedAt,
+    required this.isEstimated,
   });
 
   factory MeterReading.fromJson(Map<String, dynamic> json) {
@@ -32,9 +28,7 @@ class MeterReading {
       readingDate: DateTime.parse(json['readingDate']),
       notes: json['notes'],
       imageUrl: json['imageUrl'],
-      isVerified: json['isVerified'],
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
+      isEstimated: json['isEstimated'],
     );
   }
 
@@ -47,9 +41,7 @@ class MeterReading {
       'readingDate': readingDate.toIso8601String(),
       'notes': notes,
       'imageUrl': imageUrl,
-      'isVerified': isVerified,
-      'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt.toIso8601String(),
+      'isEstimated': isEstimated,
     };
   }
 }
