@@ -1,15 +1,15 @@
 class User {
-  final int id;
-  final String firstName;
-  final String lastName;
-  final String email;
+  final String? id;
+  final String? firstName;
+  final String? lastName;
+  final String? email;
   final String? phone;
-  final String role;
+  final String? role;
   final String? address;
   final String? city;
   final String? province;
   final String? postalCode;
-  final bool isActive;
+  final bool? isActive;
   final DateTime createdAt;
   final DateTime updatedAt;
 

@@ -72,8 +72,8 @@ class ProfileController extends GetxController {
       user.value = userData;
       
       // Set form values
-      firstNameController.text = userData.firstName;
-      lastNameController.text = userData.lastName;
+      firstNameController.text = userData.firstName ?? '';
+      lastNameController.text = userData.lastName ?? '';
       phoneController.text = userData.phone ?? '';
       addressController.text = userData.address ?? '';
     } catch (e) {
@@ -90,8 +90,8 @@ class ProfileController extends GetxController {
     if (!isEditMode.value) {
       // Reset form values if canceling edit
       if (user.value != null) {
-        firstNameController.text = user.value!.firstName;
-        lastNameController.text = user.value!.lastName;
+        firstNameController.text = user.value!.firstName ?? '';
+        lastNameController.text = user.value!.lastName ?? '';
         phoneController.text = user.value!.phone ?? '';
         addressController.text = user.value!.address ?? '';
       }

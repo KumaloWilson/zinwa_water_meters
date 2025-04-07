@@ -1,7 +1,6 @@
 class Constants {
   // API
-  static const String apiBaseUrl = 'http://10.0.2.2:5000/api'; // For Android emulator
-  // static const String apiBaseUrl = 'http://localhost:5000/api'; // For iOS simulator
+  static const String apiBaseUrl = 'https://zinwa.onrender.com/api';
   
   // Storage keys
   static const String tokenKey = 'auth_token';
@@ -13,7 +12,8 @@ class Constants {
   
   // Property types
   static const List<String> propertyTypes = [
-    'RESIDENTIAL',
+    'RESIDENTIAL_LOW_DENSITY',
+    'RESIDENTIAL_HIGH_DENSITY',
     'COMMERCIAL',
     'INDUSTRIAL',
     'AGRICULTURAL',

@@ -26,7 +26,7 @@ void main() async {
 }
 
 class ZinwaWaterApp extends StatelessWidget {
-  const ZinwaWaterApp({Key? key}) : super(key: key);
+  const ZinwaWaterApp({super.key});
 
   @override
   Widget build(BuildContext context) {

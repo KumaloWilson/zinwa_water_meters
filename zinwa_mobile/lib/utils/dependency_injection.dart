@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import '../services/api_service.dart';
 import '../services/auth_service.dart';
 import '../services/user_service.dart';
@@ -21,6 +22,7 @@ class DependencyInjection {
     Get.lazyPut<PaymentService>(() => PaymentService(), fenix: true);
     Get.lazyPut<TokenService>(() => TokenService(), fenix: true);
     Get.lazyPut<NotificationService>(() => NotificationService(), fenix: true);
+    Get.lazyPut<GetStorage>(() => GetStorage(), fenix: true);
   }
 }
 

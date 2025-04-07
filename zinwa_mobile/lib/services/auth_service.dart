@@ -4,6 +4,8 @@ import 'package:zinwa_mobile_app/models/user_model.dart';
 import 'package:zinwa_mobile_app/services/api_service.dart';
 import 'package:zinwa_mobile_app/utils/constants.dart';
 
+import '../utils/logs.dart';
+
 class AuthService extends GetxService {
   final ApiService _apiService = Get.find<ApiService>();
   final GetStorage _storage = Get.find<GetStorage>();
@@ -63,6 +65,7 @@ class AuthService extends GetxService {
 
       return User.fromJson(userData);
     } catch (e) {
+      DevLogs.logError(e.toString());
       rethrow;
     }
   }
@@ -81,6 +84,7 @@ class AuthService extends GetxService {
 
       return User.fromJson(user);
     } catch (e) {
+      DevLogs.logError(e.toString());
       rethrow;
     }
   }
@@ -90,6 +94,7 @@ class AuthService extends GetxService {
     try {
       await _apiService.post('/auth/logout');
     } catch (e) {
+      DevLogs.logError(e.toString());
       // Even if the API call fails, we still want to clear local storage
     } finally {
       await _storage.remove(Constants.tokenKey);
@@ -104,6 +109,7 @@ class AuthService extends GetxService {
         'email': email,
       });
     } catch (e) {
+      DevLogs.logError(e.toString());
       rethrow;
     }
   }
@@ -116,6 +122,7 @@ class AuthService extends GetxService {
         'password': password,
       });
     } catch (e) {
+      DevLogs.logError(e.toString());
       rethrow;
     }
   }
@@ -128,6 +135,7 @@ class AuthService extends GetxService {
         'newPassword': newPassword,
       });
     } catch (e) {
+      DevLogs.logError(e.toString());
       rethrow;
     }
   }

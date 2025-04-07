@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:logger/logger.dart';
 import 'package:zinwa_mobile_app/models/user_model.dart';
 import 'package:zinwa_mobile_app/routes/app_pages.dart';
 import 'package:zinwa_mobile_app/services/auth_service.dart';
