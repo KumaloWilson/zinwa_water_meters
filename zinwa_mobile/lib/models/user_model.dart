@@ -24,7 +24,7 @@ class User {
       firstName: json['firstName'],
       lastName: json['lastName'],
       email: json['email'],
-      phone: json['phone'],
+      phone: json['phoneNumber'],
       role: json['role'],
     );
   }
