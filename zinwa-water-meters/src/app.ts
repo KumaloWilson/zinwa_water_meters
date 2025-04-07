@@ -19,6 +19,7 @@ import paymentRoutes from "./routes/paymentRoutes"
 import dashboardRoutes from "./routes/dashboardRoutes"
 import adminRoutes from "./routes/adminRoutes"
 import notificationRoutes from "./routes/notificationRoutes"
+import rateRoutes from "./routes/rateRoutes";
 import meterReadingRoutes from "./routes/meterReadingRoutes"
 import { logger } from "./utils/logger"
 
@@ -76,6 +77,8 @@ app.use("/api/dashboard", dashboardRoutes)
 app.use("/api/admin", adminRoutes)
 app.use("/api/notifications", notificationRoutes)
 app.use("/api/meter-readings", meterReadingRoutes)
+app.use("/api/rates", rateRoutes)
+
 
 // Health check endpoint
 app.get("/health", (req: Request, res: Response) => {
