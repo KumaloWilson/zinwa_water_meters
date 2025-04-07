@@ -3,15 +3,18 @@ import 'package:zinwa_mobile_app/models/payment_model.dart';
 import 'package:zinwa_mobile_app/services/api_service.dart';
 
 import '../utils/logs.dart';
+import 'auth_service.dart';
 
 class PaymentService extends GetxService {
   final ApiService _apiService = Get.find<ApiService>();
+  final AuthService _authService = Get.find<AuthService>();
 
   // Get all payments for current user
   Future<List<Payment>> getUserPayments() async {
+    final userId = _authService.currentUser?.id ?? '';
     try {
-      final response = await _apiService.get('/payments');
-      final List<dynamic> paymentsJson = response.data;
+      final response = await _apiService.get('/payments/user/$userId');
+      final List<dynamic> paymentsJson = response.data['payments'];
       return paymentsJson.map((json) => Payment.fromJson(json)).toList();
     } catch (e) {
       DevLogs.logError(e.toString());
