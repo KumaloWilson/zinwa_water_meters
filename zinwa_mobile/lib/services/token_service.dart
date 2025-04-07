@@ -33,10 +33,8 @@ class TokenService extends GetxService {
   // Get tokens for a property
   Future<List<Token>> getPropertyTokens(String propertyId) async {
     try {
-      final response = await _apiService.get('/tokens', queryParameters: {
-        'propertyId': propertyId,
-      });
-      final List<dynamic> tokensJson = response.data;
+      final response = await _apiService.get('/tokens/property/$propertyId', queryParameters: {});
+      final List<dynamic> tokensJson = response.data['tokens'];
       return tokensJson.map((json) => Token.fromJson(json)).toList();
     } catch (e) {
       DevLogs.logError(e.toString());

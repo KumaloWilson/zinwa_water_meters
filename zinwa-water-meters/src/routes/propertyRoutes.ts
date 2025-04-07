@@ -20,7 +20,13 @@ router.post("/", authenticate, propertyValidators.create, validate, createProper
 router.get("/", authenticate, getAllProperties)
 
 // Get property by ID
-router.get("/:id", authenticate, isOwnerOrAdmin("id"), propertyValidators.getById, validate, getPropertyById)
+router.get(
+  "/:id",
+   authenticate,
+    // isOwnerOrAdmin("id"),
+     propertyValidators.getById,
+      validate, getPropertyById
+    )
 
 // Get properties by user ID
 router.get(

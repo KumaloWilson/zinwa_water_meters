@@ -6,7 +6,7 @@ class User {
   final String? phone;
   final String role;
   final String? address;
-  final bool isVerified;
+  final bool? isVerified;
 
   User({
     required this.id,

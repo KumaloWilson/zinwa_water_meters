@@ -30,10 +30,10 @@ class PaymentService extends GetxService {
     }
   }
 
-  Future<List<Payment>> getPaymentsByPropertyId(String paymentId) async {
+  Future<List<Payment>> getPaymentsByPropertyId(String propertyId) async {
     try {
-      final response = await _apiService.get('/payments');
-      final List<dynamic> paymentsJson = response.data;
+      final response = await _apiService.get('/payments/property/$propertyId');
+      final List<dynamic> paymentsJson = response.data['payments'];
       return paymentsJson.map((json) => Payment.fromJson(json)).toList();
     } catch (e) {
       DevLogs.logError(e.toString());
