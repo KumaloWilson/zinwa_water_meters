@@ -22,7 +22,6 @@ class ProfileController extends GetxController {
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
   final phoneController = TextEditingController();
-  final addressController = TextEditingController();
   
   // Password change form
   final passwordFormKey = GlobalKey<FormState>();
@@ -55,7 +54,6 @@ class ProfileController extends GetxController {
     firstNameController.dispose();
     lastNameController.dispose();
     phoneController.dispose();
-    addressController.dispose();
     currentPasswordController.dispose();
     newPasswordController.dispose();
     confirmPasswordController.dispose();
@@ -75,7 +73,6 @@ class ProfileController extends GetxController {
       firstNameController.text = userData.firstName ?? '';
       lastNameController.text = userData.lastName ?? '';
       phoneController.text = userData.phone ?? '';
-      addressController.text = userData.address ?? '';
     } catch (e) {
       UIHelpers.showErrorSnackbar('Error', 'Failed to load user profile');
     } finally {
@@ -93,7 +90,6 @@ class ProfileController extends GetxController {
         firstNameController.text = user.value!.firstName ?? '';
         lastNameController.text = user.value!.lastName ?? '';
         phoneController.text = user.value!.phone ?? '';
-        addressController.text = user.value!.address ?? '';
       }
     }
   }
@@ -109,7 +105,6 @@ class ProfileController extends GetxController {
           'firstName': firstNameController.text,
           'lastName': lastNameController.text,
           'phone': phoneController.text,
-          'address': addressController.text,
         };
         
         // Update user profile

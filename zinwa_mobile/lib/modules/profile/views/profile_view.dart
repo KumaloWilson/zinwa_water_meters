@@ -192,14 +192,7 @@ class ProfileView extends GetView<ProfileController> {
               label: 'Phone',
               value: user.phone ?? 'Not provided',
             ),
-            const SizedBox(height: 12),
-            
-            // Address
-            _buildInfoRow(
-              icon: Icons.home,
-              label: 'Address',
-              value: user.address ?? 'Not provided',
-            ),
+
           ],
         ),
       ),
@@ -263,15 +256,7 @@ class ProfileView extends GetView<ProfileController> {
                 prefixIcon: Icons.phone,
                 keyboardType: TextInputType.phone,
               ),
-              const SizedBox(height: 16),
-              
-              // Address
-              CustomTextField(
-                controller: controller.addressController,
-                labelText: 'Address',
-                prefixIcon: Icons.home,
-                maxLines: 2,
-              ),
+
               const SizedBox(height: 24),
               
               // Save button
