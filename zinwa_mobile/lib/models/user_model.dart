@@ -1,17 +1,12 @@
 class User {
-  final int id;
+  final String id;
   final String firstName;
   final String lastName;
   final String email;
   final String? phone;
   final String role;
   final String? address;
-  final String? city;
-  final String? province;
-  final String? postalCode;
-  final bool isActive;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  final bool? isVerified;
 
   User({
     required this.id,
@@ -21,12 +16,7 @@ class User {
     this.phone,
     required this.role,
     this.address,
-    this.city,
-    this.province,
-    this.postalCode,
-    required this.isActive,
-    required this.createdAt,
-    required this.updatedAt,
+    required this.isVerified,
   });
 
   String get fullName => '$firstName $lastName';
@@ -37,15 +27,10 @@ class User {
       firstName: json['firstName'],
       lastName: json['lastName'],
       email: json['email'],
-      phone: json['phone'],
+      phone: json['phoneNumber'],
       role: json['role'],
-      address: json['address'],
-      city: json['city'],
-      province: json['province'],
-      postalCode: json['postalCode'],
-      isActive: json['isActive'],
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
+      address: json['address'] ?? '',
+      isVerified: json['isVerified'],
     );
   }
 
@@ -58,12 +43,7 @@ class User {
       'phone': phone,
       'role': role,
       'address': address,
-      'city': city,
-      'province': province,
-      'postalCode': postalCode,
-      'isActive': isActive,
-      'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt.toIso8601String(),
+      'isVerified': isVerified,
     };
   }
 }

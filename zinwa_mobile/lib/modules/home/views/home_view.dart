@@ -4,7 +4,7 @@ import 'package:zinwa_mobile_app/modules/home/controllers/home_controller.dart';
 import 'package:zinwa_mobile_app/theme/app_colors.dart';
 
 class HomeView extends GetView<HomeController> {
-  const HomeView({Key? key}) : super(key: key);
+  const HomeView({super.key});
 
   @override
   Widget build(BuildContext context) {

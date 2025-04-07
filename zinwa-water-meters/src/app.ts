@@ -5,8 +5,6 @@ import cors from "cors"
 import helmet from "helmet"
 import morgan from "morgan"
 import { rateLimit } from "express-rate-limit"
-// import { createClient } from "ioredis"
-// import { RedisStore } from "rate-limit-redis"
 import swaggerUi from "swagger-ui-express"
 import YAML from "yamljs"
 import path from "path"
@@ -30,14 +28,7 @@ dotenv.config()
 const app: Application = express()
 const PORT = process.env.PORT || 5000
 
-// // Redis client for rate limiting
-// const redisClient = createClient({
-//   url: process.env.REDIS_URL || "redis://localhost:6379",
-// })
 
-// // Connect to Redis
-// redisClient.on("error", (err) => logger.error("Redis error:", err))
-// redisClient.connect().catch(console.error)
 
 // Middleware
 app.use(helmet()) // Security headers

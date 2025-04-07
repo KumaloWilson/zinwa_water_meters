@@ -6,7 +6,7 @@ import 'package:zinwa_mobile_app/widgets/custom_button.dart';
 import 'package:zinwa_mobile_app/widgets/custom_text_field.dart';
 
 class ProfileView extends GetView<ProfileController> {
-  const ProfileView({Key? key}) : super(key: key);
+  const ProfileView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +78,7 @@ class ProfileView extends GetView<ProfileController> {
                   radius: 50,
                   backgroundColor: AppColors.primary.withOpacity(0.2),
                   child: Text(
-                    '${user.firstName[0]}${user.lastName[0]}',
+                    '${user.firstName?[0]}${user.lastName?[0]}',
                     style: TextStyle(
                       fontSize: 36,
                       fontWeight: FontWeight.bold,
@@ -119,7 +119,7 @@ class ProfileView extends GetView<ProfileController> {
           
           // User email
           Text(
-            user.email,
+            user.email ?? ' ',
             style: TextStyle(
               fontSize: 16,
               color: Colors.grey[600],
@@ -135,7 +135,7 @@ class ProfileView extends GetView<ProfileController> {
               borderRadius: BorderRadius.circular(16),
             ),
             child: Text(
-              user.role.capitalize!,
+              user.role!.capitalize!,
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
@@ -174,7 +174,7 @@ class ProfileView extends GetView<ProfileController> {
             _buildInfoRow(
               icon: Icons.person,
               label: 'First Name',
-              value: user.firstName,
+              value: user.firstName ?? '',
             ),
             const SizedBox(height: 12),
             
@@ -182,7 +182,7 @@ class ProfileView extends GetView<ProfileController> {
             _buildInfoRow(
               icon: Icons.person,
               label: 'Last Name',
-              value: user.lastName,
+              value: user.lastName ?? '',
             ),
             const SizedBox(height: 12),
             
@@ -192,14 +192,7 @@ class ProfileView extends GetView<ProfileController> {
               label: 'Phone',
               value: user.phone ?? 'Not provided',
             ),
-            const SizedBox(height: 12),
-            
-            // Address
-            _buildInfoRow(
-              icon: Icons.home,
-              label: 'Address',
-              value: user.address ?? 'Not provided',
-            ),
+
           ],
         ),
       ),
@@ -263,15 +256,7 @@ class ProfileView extends GetView<ProfileController> {
                 prefixIcon: Icons.phone,
                 keyboardType: TextInputType.phone,
               ),
-              const SizedBox(height: 16),
-              
-              // Address
-              CustomTextField(
-                controller: controller.addressController,
-                labelText: 'Address',
-                prefixIcon: Icons.home,
-                maxLines: 2,
-              ),
+
               const SizedBox(height: 24),
               
               // Save button
