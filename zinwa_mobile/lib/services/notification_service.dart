@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:zinwa_mobile_app/models/notification_model.dart';
 import 'package:zinwa_mobile_app/services/api_service.dart';
 
+import '../utils/logs.dart';
+
 class NotificationService {
   final ApiService _apiService = Get.find<ApiService>();
 
@@ -14,6 +16,7 @@ class NotificationService {
     } on DioException catch (e) {
       throw _handleError(e);
     } catch (e) {
+      DevLogs.logError(e.toString());
       throw 'Failed to get notifications: $e';
     }
   }
@@ -24,6 +27,7 @@ class NotificationService {
     } on DioException catch (e) {
       throw _handleError(e);
     } catch (e) {
+      DevLogs.logError(e.toString());
       throw 'Failed to mark notification as read: $e';
     }
   }
@@ -34,6 +38,7 @@ class NotificationService {
     } on DioException catch (e) {
       throw _handleError(e);
     } catch (e) {
+      DevLogs.logError(e.toString());
       throw 'Failed to mark all notifications as read: $e';
     }
   }
@@ -43,8 +48,10 @@ class NotificationService {
       if (e.response!.data != null && e.response!.data['message'] != null) {
         return e.response!.data['message'];
       }
+      DevLogs.logError(e.toString());
       return 'Error ${e.response!.statusCode}: ${e.response!.statusMessage}';
     }
+    DevLogs.logError(e.toString());
     return e.message ?? 'Unknown error occurred';
   }
 }

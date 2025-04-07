@@ -37,6 +37,7 @@ class AuthService extends GetxService {
 
       return User.fromJson(userData);
     } catch (e) {
+      DevLogs.logError(e.toString());
       // If there's an error fetching the user, check if we have cached data
       final cachedUser = currentUser;
       if (cachedUser != null) {

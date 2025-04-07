@@ -2,6 +2,8 @@ import 'package:get/get.dart';
 import 'package:zinwa_mobile_app/models/meter_reading_model.dart';
 import 'package:zinwa_mobile_app/services/api_service.dart';
 
+import '../utils/logs.dart';
+
 class MeterReadingService extends GetxService {
   final ApiService _apiService = Get.find<ApiService>();
 
@@ -14,6 +16,7 @@ class MeterReadingService extends GetxService {
       final List<dynamic> readingsJson = response.data;
       return readingsJson.map((json) => MeterReading.fromJson(json)).toList();
     } catch (e) {
+      DevLogs.logError(e.toString());
       rethrow;
     }
   }
@@ -35,6 +38,7 @@ class MeterReadingService extends GetxService {
       final response = await _apiService.post('/meter-readings', data: data);
       return MeterReading.fromJson(response.data);
     } catch (e) {
+      DevLogs.logError(e.toString());
       rethrow;
     }
   }
@@ -45,6 +49,7 @@ class MeterReadingService extends GetxService {
       final response = await _apiService.get('/meter-readings/$readingId');
       return MeterReading.fromJson(response.data);
     } catch (e) {
+      DevLogs.logError(e.toString());
       rethrow;
     }
   }

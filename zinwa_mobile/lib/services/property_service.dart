@@ -3,6 +3,8 @@ import 'package:zinwa_mobile_app/models/property_model.dart';
 import 'package:zinwa_mobile_app/models/rate_model.dart';
 import 'package:zinwa_mobile_app/services/api_service.dart';
 
+import '../utils/logs.dart';
+
 class PropertyService extends GetxService {
   final ApiService _apiService = Get.find<ApiService>();
 
@@ -13,6 +15,7 @@ class PropertyService extends GetxService {
       final List<dynamic> propertiesJson = response.data;
       return propertiesJson.map((json) => Property.fromJson(json)).toList();
     } catch (e) {
+      DevLogs.logError(e.toString());
       rethrow;
     }
   }
@@ -23,6 +26,7 @@ class PropertyService extends GetxService {
       final response = await _apiService.get('/properties/$propertyId');
       return Property.fromJson(response.data);
     } catch (e) {
+      DevLogs.logError(e.toString());
       rethrow;
     }
   }
@@ -32,6 +36,7 @@ class PropertyService extends GetxService {
       final response = await _apiService.get('/properties/$propertyId');
       return Rate.fromJson(response.data);
     } catch (e) {
+      DevLogs.logError(e.toString());
       rethrow;
     }
   }
@@ -42,6 +47,7 @@ class PropertyService extends GetxService {
       final response = await _apiService.get('/properties/$propertyId/consumption');
       return response.data;
     } catch (e) {
+      DevLogs.logError(e.toString());
       rethrow;
     }
   }
@@ -52,6 +58,7 @@ class PropertyService extends GetxService {
       final response = await _apiService.get('/properties/$propertyId/payments');
       return response.data;
     } catch (e) {
+      DevLogs.logError(e.toString());
       rethrow;
     }
   }
@@ -62,6 +69,7 @@ class PropertyService extends GetxService {
       final response = await _apiService.get('/properties/$propertyId/tokens');
       return response.data;
     } catch (e) {
+      DevLogs.logError(e.toString());
       rethrow;
     }
   }

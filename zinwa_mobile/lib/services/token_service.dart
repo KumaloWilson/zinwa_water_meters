@@ -2,6 +2,8 @@ import 'package:get/get.dart';
 import 'package:zinwa_mobile_app/models/token_model.dart';
 import 'package:zinwa_mobile_app/services/api_service.dart';
 
+import '../utils/logs.dart';
+
 class TokenService extends GetxService {
   final ApiService _apiService = Get.find<ApiService>();
 
@@ -12,6 +14,7 @@ class TokenService extends GetxService {
       final List<dynamic> tokensJson = response.data;
       return tokensJson.map((json) => Token.fromJson(json)).toList();
     } catch (e) {
+      DevLogs.logError(e.toString());
       rethrow;
     }
   }
@@ -22,6 +25,7 @@ class TokenService extends GetxService {
       final response = await _apiService.get('/tokens/$tokenId');
       return Token.fromJson(response.data);
     } catch (e) {
+      DevLogs.logError(e.toString());
       rethrow;
     }
   }
@@ -35,6 +39,7 @@ class TokenService extends GetxService {
       final List<dynamic> tokensJson = response.data;
       return tokensJson.map((json) => Token.fromJson(json)).toList();
     } catch (e) {
+      DevLogs.logError(e.toString());
       rethrow;
     }
   }
