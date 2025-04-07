@@ -28,7 +28,7 @@ class PropertyService extends GetxService {
   Future<Property> getPropertyById(String propertyId) async {
     try {
       final response = await _apiService.get('/properties/$propertyId');
-      return Property.fromJson(response.data);
+      return Property.fromJson(response.data['property']);
     } catch (e) {
       DevLogs.logError(e.toString());
       rethrow;
