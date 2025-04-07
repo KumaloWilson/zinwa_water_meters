@@ -1,7 +1,7 @@
 import type { Request, Response } from "express"
 import { User, Property, Token, Payment, MeterReading, type PropertyType, PaymentStatus } from "../models"
 import { logger } from "../utils/logger"
-import { Op, fn, col, literal } from "sequelize"
+import { Op, fn, col } from "sequelize"
 
 // Define interfaces for our aggregate query results
 interface AggregateResult {
@@ -117,8 +117,8 @@ export const getCustomerDashboard = async (req: Request, res: Response) => {
     // Get monthly consumption trend
     const monthlyConsumption = await MeterReading.findAll({
       attributes: [
-        [fn("date_trunc", "month", col("readingDate")), "month"],
-        [fn("sum", col("consumption")), "totalConsumption"],
+        [fn("date_trunc", "month", col("MeterReading.readingDate")), "month"],
+        [fn("sum", col("MeterReading.consumption")), "totalConsumption"],
       ],
       where: {
         readingDate: {
@@ -133,8 +133,8 @@ export const getCustomerDashboard = async (req: Request, res: Response) => {
           attributes: [],
         },
       ],
-      group: [fn("date_trunc", "month", col("readingDate"))],
-      order: [fn("date_trunc", "month", col("readingDate"))],
+      group: [fn("date_trunc", "month", col("MeterReading.readingDate"))],
+      order: [fn("date_trunc", "month", col("MeterReading.readingDate"))],
       raw: true,
     })
 
@@ -196,7 +196,7 @@ export const getAdminDashboard = async (req: Request, res: Response) => {
 
     // Get total revenue - using findAll with aggregate
     const revenueResult = (await Payment.findAll({
-      attributes: [[fn("sum", col("amount")), "total"]],
+      attributes: [[fn("sum", col("Payment.amount")), "total"]],
       where: {
         status: PaymentStatus.COMPLETED,
         createdAt: {
@@ -219,7 +219,7 @@ export const getAdminDashboard = async (req: Request, res: Response) => {
 
     // Get total consumption - using findAll with aggregate
     const consumptionResult = (await MeterReading.findAll({
-      attributes: [[fn("sum", col("consumption")), "total"]],
+      attributes: [[fn("sum", col("MeterReading.consumption")), "total"]],
       where: {
         readingDate: {
           [Op.between]: [startDate, endDate],
@@ -243,7 +243,7 @@ export const getAdminDashboard = async (req: Request, res: Response) => {
     const revenueByPropertyType = await Payment.findAll({
       attributes: [
         [col("property.propertyType"), "propertyType"],
-        [fn("sum", col("amount")), "totalRevenue"],
+        [fn("sum", col("Payment.amount")), "totalRevenue"],
       ],
       where: {
         status: PaymentStatus.COMPLETED,
@@ -266,7 +266,7 @@ export const getAdminDashboard = async (req: Request, res: Response) => {
     const consumptionByPropertyType = await MeterReading.findAll({
       attributes: [
         [col("property.propertyType"), "propertyType"],
-        [fn("sum", col("consumption")), "totalConsumption"],
+        [fn("sum", col("MeterReading.consumption")), "totalConsumption"],
       ],
       where: {
         readingDate: {
@@ -288,8 +288,8 @@ export const getAdminDashboard = async (req: Request, res: Response) => {
     // Get monthly revenue trend
     const monthlyRevenue = await Payment.findAll({
       attributes: [
-        [fn("date_trunc", "month", col("createdAt")), "month"],
-        [fn("sum", col("amount")), "totalRevenue"],
+        [fn("date_trunc", "month", col("Payment.createdAt")), "month"],
+        [fn("sum", col("Payment.amount")), "totalRevenue"],
       ],
       where: {
         status: PaymentStatus.COMPLETED,
@@ -305,16 +305,16 @@ export const getAdminDashboard = async (req: Request, res: Response) => {
           where: propertyWhereClause,
         },
       ],
-      group: [fn("date_trunc", "month", col("createdAt"))],
-      order: [fn("date_trunc", "month", col("createdAt"))],
+      group: [fn("date_trunc", "month", col("Payment.createdAt"))],
+      order: [fn("date_trunc", "month", col("Payment.createdAt"))],
       raw: true,
     })
 
     // Get monthly consumption trend
     const monthlyConsumption = await MeterReading.findAll({
       attributes: [
-        [fn("date_trunc", "month", col("readingDate")), "month"],
-        [fn("sum", col("consumption")), "totalConsumption"],
+        [fn("date_trunc", "month", col("MeterReading.readingDate")), "month"],
+        [fn("sum", col("MeterReading.consumption")), "totalConsumption"],
       ],
       where: {
         readingDate: {
@@ -329,8 +329,8 @@ export const getAdminDashboard = async (req: Request, res: Response) => {
           where: propertyWhereClause,
         },
       ],
-      group: [fn("date_trunc", "month", col("readingDate"))],
-      order: [fn("date_trunc", "month", col("readingDate"))],
+      group: [fn("date_trunc", "month", col("MeterReading.readingDate"))],
+      order: [fn("date_trunc", "month", col("MeterReading.readingDate"))],
       raw: true,
     })
 
@@ -360,7 +360,10 @@ export const getAdminDashboard = async (req: Request, res: Response) => {
 
     // Get top consumers
     const topConsumers = await MeterReading.findAll({
-      attributes: ["propertyId", [fn("sum", col("consumption")), "totalConsumption"]],
+      attributes: [
+        "propertyId",
+        [fn("sum", col("MeterReading.consumption")), "total_consumption"], // Use snake_case for PostgreSQL
+      ],
       where: {
         readingDate: {
           [Op.between]: [startDate, endDate],
@@ -382,7 +385,7 @@ export const getAdminDashboard = async (req: Request, res: Response) => {
         },
       ],
       group: ["propertyId", "property.id", "property.owner.id"],
-      order: [[literal("totalConsumption"), "DESC"]],
+      order: [[fn("sum", col("MeterReading.consumption")), "DESC"]], // Use the function directly
       limit: 10,
       raw: true,
       nest: true,
@@ -409,4 +412,5 @@ export const getAdminDashboard = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error retrieving dashboard data" })
   }
 }
+
 
