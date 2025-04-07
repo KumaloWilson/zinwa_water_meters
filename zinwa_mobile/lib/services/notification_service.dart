@@ -4,14 +4,19 @@ import 'package:zinwa_mobile_app/models/notification_model.dart';
 import 'package:zinwa_mobile_app/services/api_service.dart';
 
 import '../utils/logs.dart';
+import 'auth_service.dart';
 
 class NotificationService {
   final ApiService _apiService = Get.find<ApiService>();
+  final AuthService _authService = Get.find<AuthService>();
+
 
   Future<List<NotificationModel>> getNotifications() async {
+    final String userId = _authService.currentUser?.id ?? '';
+
     try {
-      final response = await _apiService.get('/notifications');
-      final List<dynamic> data = response.data['data'];
+      final response = await _apiService.get('/notifications/user/$userId');
+      final List<dynamic> data = response.data['notifications'];
       return data.map((json) => NotificationModel.fromJson(json)).toList();
     } on DioException catch (e) {
       throw _handleError(e);

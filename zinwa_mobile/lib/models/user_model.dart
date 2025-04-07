@@ -3,17 +3,20 @@ class User {
   final String firstName;
   final String lastName;
   final String email;
-  final String phone;
+  final String? phone;
   final String role;
-
+  final String? address;
+  final bool isVerified;
 
   User({
     required this.id,
     required this.firstName,
     required this.lastName,
     required this.email,
-    required this.phone,
+    this.phone,
     required this.role,
+    this.address,
+    required this.isVerified,
   });
 
   String get fullName => '$firstName $lastName';
@@ -26,6 +29,8 @@ class User {
       email: json['email'],
       phone: json['phoneNumber'],
       role: json['role'],
+      address: json['address'] ?? '',
+      isVerified: json['isVerified'],
     );
   }
 
@@ -37,6 +42,8 @@ class User {
       'email': email,
       'phone': phone,
       'role': role,
+      'address': address,
+      'isVerified': isVerified,
     };
   }
 }

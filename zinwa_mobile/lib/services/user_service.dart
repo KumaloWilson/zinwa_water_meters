@@ -10,8 +10,8 @@ class UserService extends GetxService {
   // Get user profile
   Future<User> getUserProfile() async {
     try {
-      final response = await _apiService.get('/users/profile');
-      return User.fromJson(response.data);
+      final response = await _apiService.get('/auth/me');
+      return User.fromJson(response.data['user']);
     } catch (e) {
       DevLogs.logError(e.toString());
       rethrow;
