@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-
+import 'package:get/get.dart';
+import '../../../models/token_model.dart';
+import '../../../routes/app_routes.dart';
 import '../../../theme/app_colors.dart';
 import '../../../utils/logs.dart';
+import '../controllers/payment_controller.dart';
 
 class PaymentWebViewScreen extends StatefulWidget {
-  final String redirectUrl;
+  final TokenPurchaseResponse purchaseResponse;
 
-  const PaymentWebViewScreen({super.key, required this.redirectUrl});
+  const PaymentWebViewScreen({super.key, required this.purchaseResponse});
 
   @override
   State<PaymentWebViewScreen> createState() => _PaymentWebViewScreenState();
@@ -16,10 +19,9 @@ class PaymentWebViewScreen extends StatefulWidget {
 class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
   InAppWebViewController? _controller;
   bool _isLoading = true;
-  final bool _showProceedButton = false;
   double _loadingProgress = 0.0;
   String currentUrl = '';
-
+  final PaymentController _paymentController = Get.find<PaymentController>();
 
   final InAppWebViewSettings _settings = InAppWebViewSettings(
     useShouldOverrideUrlLoading: true,
@@ -37,9 +39,8 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
   void initState() {
     super.initState();
     // Log the URL for debugging
-    DevLogs.logInfo('WebView initialized with URL: ${widget.redirectUrl}');
+    DevLogs.logInfo('WebView initialized with URL: ${widget.purchaseResponse.redirectUrl}');
   }
-
 
   @override
   void dispose() {
@@ -48,12 +49,16 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
   }
 
   void _handlePaymentCompletion(String url) {
-    if (url.contains("payment/return")) {
+    if (url.contains("payment/return") ||
+        url.contains("payment/success") ||
+        url.contains("payment/callback")) {
       try {
-        final uri = Uri.parse(url);
-        final purchaseId = int.parse(uri.pathSegments.last);
-        DevLogs.logInfo("Payment completed with purchaseID: $purchaseId");
-
+        // Extract any relevant info from the URL if needed
+        DevLogs.logInfo("Payment process completed in WebView: $url");
+        Get.offNamed(
+          AppRoutes.PAYMENT_SUCCESS,
+          arguments: widget.purchaseResponse
+        );
       } catch (e) {
         DevLogs.logError("Error processing payment completion: $e");
       }
@@ -64,7 +69,29 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        // Handle back button press
+        // Show confirmation dialog before allowing user to go back
+        if (_paymentController.isPolling.value) {
+          final bool? shouldPop = await showDialog<bool>(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Cancel Payment?'),
+              content: const Text('Your payment is still being processed. Are you sure you want to go back?'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text('NO'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: const Text('YES'),
+                ),
+              ],
+            ),
+          );
+          return shouldPop ?? false;
+        }
+
+        // Handle normal back button press
         if (_controller != null && await _controller!.canGoBack()) {
           _controller!.goBack();
           return false;
@@ -76,17 +103,33 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
           title: const Text('Payment', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18)),
           leading: IconButton(
             icon: const Icon(Icons.close),
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () async {
+              if (_paymentController.isPolling.value) {
+                final bool? shouldClose = await showDialog<bool>(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('Cancel Payment?'),
+                    content: const Text('Your payment is still being processed. Are you sure you want to close this page?'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(false),
+                        child: const Text('NO'),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(true),
+                        child: const Text('YES'),
+                      ),
+                    ],
+                  ),
+                );
+                if (shouldClose == true) {
+                  Navigator.of(context).pop();
+                }
+              } else {
+                Navigator.of(context).pop();
+              }
+            },
           ),
-          actions: [
-            if (_showProceedButton)
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop(true);
-                },
-                child: const Text('Proceed', style: TextStyle(color: Colors.white)),
-              ),
-          ],
         ),
         body: SafeArea(
           child: Stack(
@@ -94,9 +137,9 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
               InAppWebView(
                 key: const ValueKey('payment_webview'),
                 initialUrlRequest: URLRequest(
-                  url: WebUri.uri(Uri.parse(widget.redirectUrl)),
+                  url: WebUri.uri(Uri.parse(widget.purchaseResponse.redirectUrl)),
                 ),
-                initialSettings: _settings, // Updated: Using initialSettings instead of initialOptions
+                initialSettings: _settings,
                 onWebViewCreated: (controller) {
                   _controller = controller;
                   controller.addJavaScriptHandler(
@@ -140,8 +183,17 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
                   // Optional: Handle specific URLs differently
                   final url = navigationAction.request.url?.toString() ?? '';
 
+                  // Handle payment completion URLs
+                  if (url.contains("payment/return") ||
+                      url.contains("payment/success") ||
+                      url.contains("payment/callback")) {
+                    _handlePaymentCompletion(url);
+                  }
+
                   // Example: handle external links
-                  if (url.startsWith('https://external') || url.startsWith('tel:') || url.startsWith('mailto:')) {
+                  if (url.startsWith('https://external') ||
+                      url.startsWith('tel:') ||
+                      url.startsWith('mailto:')) {
                     // Open in external browser or handle specially
                     // launchUrl(Uri.parse(url));
                     return NavigationActionPolicy.CANCEL;
@@ -164,6 +216,37 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
                     valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
                   ),
                 ),
+              // Show polling indicator if payment is being verified
+              Obx(() => _paymentController.isPolling.value
+                  ? Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  color: AppColors.primary.withOpacity(0.9),
+                  child: Row(
+                    children: [
+                      const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'Verifying payment status...',
+                          style: TextStyle(color: Colors.white, fontSize: 14),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+                  : const SizedBox.shrink()),
             ],
           ),
         ),

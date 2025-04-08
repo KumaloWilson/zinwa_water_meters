@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
+import 'package:zinwa_mobile_app/models/token_model.dart';
 import 'package:zinwa_mobile_app/modules/payment/views/paynow_webview.dart';
+import 'package:zinwa_mobile_app/modules/payment/views/success_screen.dart';
 import '../modules/auth/bindings/auth_binding.dart';
 import '../modules/auth/views/login_view.dart';
 import '../modules/auth/views/register_view.dart';
@@ -77,12 +79,25 @@ class AppPages {
 
       name: AppRoutes.PAYNOWWEBVIEW,
       page: () {
-        final String redirectUrl = Get.arguments;
+        final TokenPurchaseResponse purchaseResponse = Get.arguments;
 
-        return PaymentWebViewScreen(redirectUrl: redirectUrl);
+        return PaymentWebViewScreen(purchaseResponse: purchaseResponse);
       },
       binding: PaymentBinding(),
     ),
+
+    GetPage(
+
+      name: AppRoutes.PAYMENT_SUCCESS,
+      page: () {
+        final TokenPurchaseResponse purchaseResponse = Get.arguments;
+
+
+        return SuccessScreen(purchaseResponse: purchaseResponse);
+      },
+      binding: PaymentBinding(),
+    ),
+
     GetPage(
       name: AppRoutes.PAYMENT_HISTORY,
       page: () => PaymentHistoryView(),

@@ -1,14 +1,15 @@
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:zinwa_mobile_app/models/token_model.dart';
+import 'package:zinwa_mobile_app/services/token_service.dart';
 import '../../../routes/app_routes.dart';
 import '../../../theme/app_colors.dart';
 
 
 class SuccessScreen extends StatefulWidget {
-  final Token token;
+  final TokenPurchaseResponse purchaseResponse;
 
-  const SuccessScreen({super.key, required this.token});
+  const SuccessScreen({super.key, required this.purchaseResponse});
 
   @override
   SuccessScreenState createState() => SuccessScreenState();
@@ -16,10 +17,24 @@ class SuccessScreen extends StatefulWidget {
 
 class SuccessScreenState extends State<SuccessScreen> {
   late ConfettiController _confettiController;
+  late TokenCompleteResponse completeResponse;
+
+  Future<void> confirmPurchase(TokenPurchaseResponse response) async{
+    completeResponse = await TokenService().completeTokenPurchase(
+        reference: response.payment.referenceNumber,
+        status: 'paid',
+        pollUrl: response.pollUrl
+    );
+  }
 
   @override
   void initState() {
     super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      confirmPurchase(widget.purchaseResponse);
+    });
+
     _confettiController = ConfettiController(duration: const Duration(seconds: 3));
     _confettiController.play();
   }
@@ -33,11 +48,6 @@ class SuccessScreenState extends State<SuccessScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-      ),
       body: Stack(
         alignment: Alignment.center,
         children: [
@@ -100,11 +110,9 @@ class SuccessScreenState extends State<SuccessScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildDetailRow("Meter", widget.token.tokenValue),
-          _buildDetailRow("Utility", widget.token.tokenValue),
-          _buildDetailRow("Token Amount", "${widget.token.amount}"),
-          _buildDetailRow("Token", widget.token.tokenValue ?? '---'),
-          _buildDetailRow("Volume Purchased", "${widget.token.units}"),
+          _buildDetailRow("Token", completeResponse.token.tokenValue),
+          _buildDetailRow("Token Amount", "${completeResponse.token.amount}"),
+          _buildDetailRow("Volume Purchased", "${completeResponse.token.units}"),
         ],
       ),
     );
