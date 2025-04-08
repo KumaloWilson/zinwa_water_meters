@@ -35,11 +35,13 @@ class PropertyService extends GetxService {
     }
   }
 
-  Future<Rate> getPropertyRate(String propertyId) async {
+  Future<Rate> getPropertyRate(String propertyType) async {
     try {
-      final response = await _apiService.get('/properties/$propertyId');
-      return Rate.fromJson(response.data);
+      final response = await _apiService.get('/rates/property-type/$propertyType');
+      return Rate.fromJson(response.data['rate']);
     } catch (e) {
+
+      DevLogs.logInfo('Fetching rate for property type: $propertyType');
       DevLogs.logError(e.toString());
       rethrow;
     }
