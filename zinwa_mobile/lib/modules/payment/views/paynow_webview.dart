@@ -47,19 +47,18 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
     super.dispose();
   }
 
-  // void _handlePaymentCompletion(String url) {
-  //   if (url.contains("payment/return")) {
-  //     try {
-  //       final uri = Uri.parse(url);
-  //       final purchaseId = int.parse(uri.pathSegments.last);
-  //       DevLogs.logInfo("Payment completed with purchaseID: $purchaseId");
-  //
-  //
-  //     } catch (e) {
-  //       DevLogs.logError("Error processing payment completion: $e");
-  //     }
-  //   }
-  // }
+  void _handlePaymentCompletion(String url) {
+    if (url.contains("payment/return")) {
+      try {
+        final uri = Uri.parse(url);
+        final purchaseId = int.parse(uri.pathSegments.last);
+        DevLogs.logInfo("Payment completed with purchaseID: $purchaseId");
+
+      } catch (e) {
+        DevLogs.logError("Error processing payment completion: $e");
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,13 +96,13 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
                 initialUrlRequest: URLRequest(
                   url: WebUri.uri(Uri.parse(widget.redirectUrl)),
                 ),
-                initialSettings: _settings,
+                initialSettings: _settings, // Updated: Using initialSettings instead of initialOptions
                 onWebViewCreated: (controller) {
                   _controller = controller;
                   controller.addJavaScriptHandler(
                     handlerName: 'paymentCallback',
                     callback: (args) {
-
+                      // Handle JS callbacks if your payment gateway sends them
                       return {'status': 'received'};
                     },
                   );
@@ -124,7 +123,7 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
                       currentUrl = url.toString();
                     });
                     DevLogs.logSuccess("Loaded URL: ${url.toString()}");
-                    //_handlePaymentCompletion(url.toString());
+                    _handlePaymentCompletion(url.toString());
                   }
                 },
                 onProgressChanged: (controller, progress) {

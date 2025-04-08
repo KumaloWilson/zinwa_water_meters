@@ -65,6 +65,23 @@ export const getAllPayments = async (req: Request, res: Response) => {
   }
 }
 
+export const checkPaymentStatusFromPaynow = async (req: Request, res: Response) => {
+  try {
+    const { pollurl } = req.body
+
+    // Check payment status from Paynow
+    const paynowStatus = await paynowService.checkTransactionStatus(pollurl)
+
+    res.status(200).json({
+      message: "Payment status retrieved successfully",
+      status: paynowStatus,
+    })
+  } catch (error) {
+    logger.error("Check payment status error:", error)
+    res.status(500).json({ message: "Error checking payment status" })
+  }
+}
+
 // Get payment by ID
 export const getPaymentById = async (req: Request, res: Response) => {
   try {
