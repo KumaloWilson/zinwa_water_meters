@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:zinwa_mobile_app/modules/token/controllers/token_detail_controller.dart';
@@ -68,7 +67,7 @@ class TokenDetailView extends GetView<TokenDetailController> {
 
   Widget _buildTokenStatusCard() {
     final token = controller.token.value!;
-    final isExpired = token.expiryDate.isBefore(DateTime.now());
+    final isExpired = token.expiresAt.isBefore(DateTime.now());
     
     return Card(
       elevation: 2,
@@ -131,10 +130,10 @@ class TokenDetailView extends GetView<TokenDetailController> {
                       const SizedBox(height: 4),
                       Text(
                         token.isUsed
-                            ? 'Used on ${UIHelpers.formatDate(token.usedDate!)}'
+                            ? 'Used on ${UIHelpers.formatDate(token.usedAt!)}'
                             : isExpired
-                                ? 'Expired on ${UIHelpers.formatDate(token.expiryDate)}'
-                                : 'Valid until ${UIHelpers.formatDate(token.expiryDate)}',
+                                ? 'Expired on ${UIHelpers.formatDate(token.expiresAt)}'
+                                : 'Valid until ${UIHelpers.formatDate(token.expiresAt)}',
                         style: const TextStyle(
                           fontSize: 14,
                           color: Colors.white,
@@ -234,7 +233,7 @@ class TokenDetailView extends GetView<TokenDetailController> {
                 children: [
                   Expanded(
                     child: Text(
-                      token.tokenNumber,
+                      token.tokenValue,
                       style: const TextStyle(
                         fontFamily: 'monospace',
                         fontSize: 18,
@@ -289,7 +288,7 @@ class TokenDetailView extends GetView<TokenDetailController> {
             const SizedBox(height: 16),
             Center(
               child: QrImageView(
-                data: token.tokenNumber,
+                data: token.tokenValue,
                 version: QrVersions.auto,
                 size: 200,
                 backgroundColor: Colors.white,
@@ -429,9 +428,9 @@ class TokenDetailView extends GetView<TokenDetailController> {
             const SizedBox(height: 12),
             _buildDetailRow('Token ID', '#${token.id}'),
             _buildDetailRow('Purchase Date', UIHelpers.formatDateTime(token.createdAt)),
-            _buildDetailRow('Expiry Date', UIHelpers.formatDateTime(token.expiryDate)),
-            if (token.isUsed && token.usedDate != null)
-              _buildDetailRow('Used Date', UIHelpers.formatDateTime(token.usedDate!)),
+            _buildDetailRow('Expiry Date', UIHelpers.formatDateTime(token.expiresAt)),
+            if (token.isUsed && token.usedAt != null)
+              _buildDetailRow('Used Date', UIHelpers.formatDateTime(token.usedAt!)),
             _buildDetailRow('Units', '${token.units.toStringAsFixed(2)} m³'),
             _buildDetailRow('Status', token.isUsed ? 'Used' : 'Available'),
           ],

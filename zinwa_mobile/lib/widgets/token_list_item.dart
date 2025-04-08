@@ -8,9 +8,9 @@ class TokenListItem extends StatelessWidget {
   final Token token;
 
   const TokenListItem({
-    Key? key,
+    super.key,
     required this.token,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,7 @@ class TokenListItem extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.1),
+                    color: AppColors.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
@@ -54,7 +54,7 @@ class TokenListItem extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Expires: ${UIHelpers.formatDate(token.expiryDate)}',
+                        'Expires: ${UIHelpers.formatDate(token.expiresAt)}',
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.grey[600],
@@ -97,7 +97,7 @@ class TokenListItem extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      token.tokenNumber,
+                      token.tokenValue,
                       style: const TextStyle(
                         fontFamily: 'monospace',
                         fontSize: 16,
@@ -109,7 +109,7 @@ class TokenListItem extends StatelessWidget {
                   IconButton(
                     icon: const Icon(Icons.copy),
                     onPressed: () {
-                      Clipboard.setData(ClipboardData(text: token.tokenNumber));
+                      Clipboard.setData(ClipboardData(text: token.tokenValue));
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('Token copied to clipboard'),
@@ -139,12 +139,12 @@ class TokenListItem extends StatelessWidget {
                 ),
                 
                 // Used date
-                if (token.isUsed && token.usedDate != null)
+                if (token.isUsed && token.usedAt != null)
                   Expanded(
                     child: _buildDetailItem(
                       icon: Icons.event,
                       label: 'Used On',
-                      value: UIHelpers.formatDate(token.usedDate!),
+                      value: UIHelpers.formatDate(token.usedAt!),
                     ),
                   ),
               ],
