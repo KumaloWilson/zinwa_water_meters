@@ -74,7 +74,7 @@ export const checkPaymentStatusFromPaynow = async (req: Request, res: Response) 
 
     res.status(200).json({
       message: "Payment status retrieved successfully",
-      status: paynowStatus,
+      paynowStatus,
     })
   } catch (error) {
     logger.error("Check payment status error:", error)
