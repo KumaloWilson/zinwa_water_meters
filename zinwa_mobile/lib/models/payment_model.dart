@@ -58,6 +58,7 @@ class PaymentDetails {
   final String? transactionReference;
   final String? error;
   final String? notes;
+  final Map<String, dynamic>? paynowStatus; // Add this field
 
   PaymentDetails({
     this.status,
@@ -66,6 +67,7 @@ class PaymentDetails {
     this.transactionReference,
     this.error,
     this.notes,
+    this.paynowStatus,
   });
 
   factory PaymentDetails.fromJson(Map<String, dynamic> json) {
@@ -76,6 +78,7 @@ class PaymentDetails {
       transactionReference: json['transactionReference'],
       error: json['error'],
       notes: json['notes'],
+      paynowStatus: json['paynowStatus'] as Map<String, dynamic>?,
     );
   }
 
@@ -87,6 +90,7 @@ class PaymentDetails {
       'transactionReference': transactionReference,
       'error': error,
       'notes': notes,
+      'paynowStatus': paynowStatus,
     };
   }
 }
