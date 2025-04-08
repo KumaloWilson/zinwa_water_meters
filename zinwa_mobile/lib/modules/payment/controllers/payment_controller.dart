@@ -68,7 +68,7 @@ class PaymentController extends GetxController {
       property.value = propertyData;
       
       // Load rate for property type
-      final rateData = await _propertyService.getPropertyRate(propertyId);
+      final rateData = await _propertyService.getPropertyRate(property.value!.propertyType);
       rate.value = rateData;
     } catch (e) {
       UIHelpers.showErrorSnackbar('Error', 'Failed to load property details');
