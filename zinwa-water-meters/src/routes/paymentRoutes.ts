@@ -6,6 +6,7 @@ import {
   getPaymentsByPropertyId,
   updatePaymentStatus,
   createManualPayment,
+  checkPaymentStatusFromPaynow,
 } from "../controllers/paymentController"
 import { authenticate, isAdmin, isOwnerOrAdmin } from "../middleware/auth"
 import { paymentValidators, validate } from "../middleware/validators"
@@ -36,6 +37,8 @@ router.post("/update", updatePaymentStatus)
 
 // Create manual payment (admin only)
 router.post("/manual", authenticate, isAdmin, paymentValidators.create, validate, createManualPayment)
+
+router.post("/check-payment-status", authenticate, checkPaymentStatusFromPaynow)
 
 export default router
 

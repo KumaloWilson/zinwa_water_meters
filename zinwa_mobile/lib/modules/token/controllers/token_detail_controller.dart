@@ -75,7 +75,7 @@ class TokenDetailController extends GetxController {
   // Copy token to clipboard
   void copyTokenToClipboard() {
     if (token.value != null) {
-      Clipboard.setData(ClipboardData(text: token.value!.tokenNumber));
+      Clipboard.setData(ClipboardData(text: token.value!.tokenValue));
       UIHelpers.showSuccessSnackbar('Copied', 'Token copied to clipboard');
     }
   }

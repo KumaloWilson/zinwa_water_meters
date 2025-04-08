@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:zinwa_mobile_app/modules/payment/views/paynow_webview.dart';
 import '../modules/auth/bindings/auth_binding.dart';
 import '../modules/auth/views/login_view.dart';
 import '../modules/auth/views/register_view.dart';
@@ -70,6 +71,16 @@ class AppPages {
     GetPage(
       name: AppRoutes.PAYMENT,
       page: () => PaymentView(),
+      binding: PaymentBinding(),
+    ),
+    GetPage(
+
+      name: AppRoutes.PAYNOWWEBVIEW,
+      page: () {
+        final String redirectUrl = Get.arguments;
+
+        return PaymentWebViewScreen(redirectUrl: redirectUrl);
+      },
       binding: PaymentBinding(),
     ),
     GetPage(

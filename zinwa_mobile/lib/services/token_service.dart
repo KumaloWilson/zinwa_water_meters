@@ -41,5 +41,33 @@ class TokenService extends GetxService {
       rethrow;
     }
   }
-}
 
+  // Initiate token purchase
+  Future<TokenPurchaseResponse> purchaseToken({required String propertyId, required double amount}) async {
+    try {
+      final response = await _apiService.post('/tokens/purchase', data: {
+        'propertyId': propertyId,
+        'amount': amount
+      });
+      return TokenPurchaseResponse.fromJson(response.data);
+    } catch (e) {
+      DevLogs.logError(e.toString());
+      rethrow;
+    }
+  }
+
+  // Complete token purchase
+  Future<TokenCompleteResponse> completeTokenPurchase(String reference, String status, String pollUrl) async {
+    try {
+      final response = await _apiService.post('/tokens/complete', data: {
+        'reference': reference,
+        'status': status,
+        'pollurl': pollUrl
+      });
+      return TokenCompleteResponse.fromJson(response.data);
+    } catch (e) {
+      DevLogs.logError(e.toString());
+      rethrow;
+    }
+  }
+}
