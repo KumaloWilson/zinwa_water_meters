@@ -30,6 +30,7 @@
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
     "nodemailer": "^6.10.0",
+    "paynow": "^2.2.2",
     "pg": "^8.14.1",
     "pg-hstore": "^2.3.4",
     "pg-pool": "^3.7.0",
@@ -61,5 +62,4 @@
     "typescript": "^5.7.2"
   },
   "description": ""
-
 }
