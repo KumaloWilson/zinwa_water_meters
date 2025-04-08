@@ -130,7 +130,8 @@ export const purchaseToken = async (req: Request, res: Response) => {
         amount: payment.amount,
         status: payment.status,
       },
-      redirectUrl: paynowResponse.redirectUrl || paynowResponse.pollUrl,
+      redirectUrl: paynowResponse.redirectUrl || "",
+      pollUrl: paynowResponse.pollUrl || "",
       units,
     })
   } catch (error) {
