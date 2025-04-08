@@ -1,40 +1,25 @@
-import axios from "axios"
-import crypto from "crypto"
-import { logger } from "./logger"
+import { Paynow } from "paynow";
+import { logger } from "../utils/logger";
 
 interface PaynowPaymentResponse {
-  status: string
-  pollUrl?: string
-  error?: string
-  transactionReference: string
+  status: string;
+  pollUrl?: string;
+  error?: string;
+  transactionReference: string;
 }
 
 class PaynowService {
-  private integrationId: string
-  private integrationKey: string
-  private returnUrl: string
-  private resultUrl: string
-  private paynowUrl: string
+  private paynow: Paynow;
 
   constructor() {
-    this.integrationId = process.env.PAYNOW_INTEGRATION_ID || ""
-    this.integrationKey = process.env.PAYNOW_INTEGRATION_KEY || ""
-    this.returnUrl = process.env.PAYNOW_RETURN_URL || "http://localhost:3000/payment/return"
-    this.resultUrl = process.env.PAYNOW_RESULT_URL || "http://localhost:5000/api/payments/update"
-    this.paynowUrl = process.env.PAYNOW_URL || "https://www.paynow.co.zw/interface/initiatetransaction"
-  }
-
-  private createHash(values: string): string {
-    return crypto.createHash("md5").update(values).digest("hex").toUpperCase()
-  }
-
-  private parsePaynowResponse(response: string): Record<string, string> {
-    const result: Record<string, string> = {}
-    response.split("&").forEach((item) => {
-      const [key, value] = item.split("=")
-      result[key] = value
-    })
-    return result
+    const integrationId = process.env.PAYNOW_INTEGRATION_ID || "";
+    const integrationKey = process.env.PAYNOW_INTEGRATION_KEY || "";
+    const returnUrl = process.env.PAYNOW_RETURN_URL || "http://localhost:3000/payment/return";
+    const resultUrl = process.env.PAYNOW_RESULT_URL || "http://localhost:5000/api/payments/update";
+    
+    this.paynow = new Paynow(integrationId, integrationKey);
+    this.paynow.resultUrl = resultUrl;
+    this.paynow.returnUrl = returnUrl;
   }
 
   async initiateTransaction(
@@ -42,80 +27,66 @@ class PaynowService {
     phone: string,
     amount: number,
     reference: string,
-    description: string,
+    description: string
   ): Promise<PaynowPaymentResponse> {
     try {
-      // Build payment data
-      const paymentData = {
-        id: this.integrationId,
-        reference,
-        amount: amount.toFixed(2),
-        email,
-        phone,
-        description,
-        returnurl: this.returnUrl,
-        resulturl: this.resultUrl,
-        authemail: email,
-        status: "Message",
+      // Create payment
+      const payment = this.paynow.createPayment(reference, email);
+      
+      // Add payment details
+      payment.add(description, amount);
+      
+      // Set up mobile payment if phone is provided
+      if (phone) {
+        payment.setPhone(phone);
       }
+      
+      // Send payment to Paynow
+      const response = await this.paynow.send(payment);
 
-      // Create string to hash
-      let hashString = ""
-      Object.entries(paymentData).forEach(([key, value]) => {
-        hashString += `${value}`
-      })
-      hashString += this.integrationKey
-
-      // Generate hash
-      const hash = this.createHash(hashString)
-
-      // Add hash to payment data
-      const requestData = new URLSearchParams({
-        ...paymentData,
-        hash,
-      })
-
-      // Send request to Paynow
-      const response = await axios.post(this.paynowUrl, requestData.toString(), {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-      })
-
-      // Parse response
-      const parsedResponse = this.parsePaynowResponse(response.data)
-
-      if (parsedResponse.status.toLowerCase() === "error") {
-        logger.error("Paynow payment error:", parsedResponse.error)
+      // Check if payment initiation was successful
+      if (response.success) {
+        return {
+          status: "success",
+          pollUrl: response.pollUrl,
+          transactionReference: reference,
+        };
+      } else {
+        logger.error("Paynow payment error:", response.error);
         return {
           status: "error",
-          error: parsedResponse.error,
+          error: response.error || "Payment initiation failed",
           transactionReference: reference,
-        }
-      }
-
-      return {
-        status: parsedResponse.status,
-        pollUrl: parsedResponse.pollurl,
-        transactionReference: reference,
+        };
       }
     } catch (error) {
-      logger.error("Error initiating Paynow transaction:", error)
-      throw error
+      logger.error("Error initiating Paynow transaction:", error);
+      throw new Error(`Failed to initiate Paynow transaction: ${(error as Error).message}`);
     }
   }
 
-  async checkTransactionStatus(pollUrl: string): Promise<any> {
+  async checkTransactionStatus(pollUrl: string): Promise<{
+    status: string;
+    amount?: number;
+    reference?: string;
+    paynowReference?: string;
+    paid?: boolean;
+  }> {
     try {
-      const response = await axios.get(pollUrl)
-      const parsedResponse = this.parsePaynowResponse(response.data)
-      return parsedResponse
+      const status = await this.paynow.pollTransaction(pollUrl);
+      
+      return {
+        status: status.status,
+        amount: status.amount,
+        reference: status.reference,
+        paynowReference: status.paynowReference,
+        paid: status.paid,
+      };
     } catch (error) {
-      logger.error("Error checking Paynow transaction status:", error)
-      throw error
+      logger.error("Error checking Paynow transaction status:", error);
+      throw new Error(`Failed to check transaction status: ${(error as Error).message}`);
     }
   }
 }
 
-export default new PaynowService()
-
+export default new PaynowService();
