@@ -8,16 +8,16 @@ class PaymentListItem extends StatelessWidget {
   final String propertyName;
 
   const PaymentListItem({
-    Key? key,
+    super.key,
     required this.payment,
     required this.propertyName,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
       leading: CircleAvatar(
-        backgroundColor: _getStatusColor(payment.status).withOpacity(0.2),
+        backgroundColor: _getStatusColor(payment.status).withValues(alpha: 0.2),
         child: Icon(
           _getStatusIcon(payment.status),
           color: _getStatusColor(payment.status),
@@ -30,7 +30,7 @@ class PaymentListItem extends StatelessWidget {
         ),
       ),
       subtitle: Text(
-        UIHelpers.formatDate(payment.paymentDate),
+        payment.paidAt != null ? UIHelpers.formatDate(payment.paidAt!): '',
         style: TextStyle(
           color: Colors.grey[600],
           fontSize: 12,
@@ -51,7 +51,7 @@ class PaymentListItem extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
             decoration: BoxDecoration(
-              color: _getStatusColor(payment.status).withOpacity(0.1),
+              color: _getStatusColor(payment.status).withValues(alpha: .1),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(

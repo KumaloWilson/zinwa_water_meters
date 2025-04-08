@@ -31,8 +31,13 @@ class PaynowService {
     description: string
   ): Promise<PaynowPaymentResponse> {
     try {
-      // Create payment
-      const payment = this.paynow.createPayment(reference, email);
+// Create payment - use merchant email in test mode
+    const isTestMode = process.env.NODE_ENV !== 'production';
+    const paymentEmail = isTestMode 
+      ? process.env.MERCHANT_EMAIL || ''// Add this to your env variables
+      : email;
+    
+    const payment = this.paynow.createPayment(reference, paymentEmail);
       
       // Add payment details
       payment.add(description, amount);
@@ -42,9 +47,12 @@ class PaynowService {
       //   payment.setPhone(phone);
       // }
       
+
+
       // Send payment to Paynow
       const response = await this.paynow.send(payment);
 
+      logger.info(`Initiating Paynow transaction: ${JSON.stringify(response)}`);
       // Check if payment initiation was successful
       if (response.success) {
         return {

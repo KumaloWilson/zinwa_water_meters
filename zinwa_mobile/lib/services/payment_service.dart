@@ -37,6 +37,7 @@ class PaymentService extends GetxService {
     try {
       final response = await _apiService.get('/payments/property/$propertyId');
       final List<dynamic> paymentsJson = response.data['payments'];
+      DevLogs.logInfo(paymentsJson.toString());
       return paymentsJson.map((json) => Payment.fromJson(json)).toList();
     } catch (e) {
       DevLogs.logError(e.toString());

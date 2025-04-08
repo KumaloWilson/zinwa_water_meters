@@ -90,7 +90,7 @@ class DashboardController extends GetxController {
     try {
       final payments = await _paymentService.getUserPayments();
       // Sort by date (newest first) and take the 5 most recent
-      payments.sort((a, b) => b.paymentDate.compareTo(a.paymentDate));
+      payments.sort((a, b) => b.createdAt.compareTo(a.createdAt));
       recentPayments.value = payments.take(5).toList();
     } catch (e) {
       rethrow;
