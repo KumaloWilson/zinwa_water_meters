@@ -31,6 +31,8 @@ dependencies:
   image_picker: ^1.1.2
   url_launcher: ^6.3.1
   qr_flutter: ^4.1.0
+  flutter_inappwebview: ^6.1.5
+  confetti: ^0.8.0
 
 
 dev_dependencies:

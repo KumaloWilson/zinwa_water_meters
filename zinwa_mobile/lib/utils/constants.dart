@@ -19,13 +19,5 @@ class Constants {
     'AGRICULTURAL',
     'INSTITUTIONAL'
   ];
-  
-  // Payment methods
-  static const List<String> paymentMethods = [
-    'MOBILE_MONEY',
-    'BANK_TRANSFER',
-    'CREDIT_CARD',
-    'CASH'
-  ];
 }
 

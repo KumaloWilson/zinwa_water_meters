@@ -86,7 +86,7 @@ class PaymentView extends GetView<PaymentController> {
                             () => Container(
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
-                                color: AppColors.primary.withOpacity(0.1),
+                                color: AppColors.primary.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Row(
@@ -122,38 +122,7 @@ class PaymentView extends GetView<PaymentController> {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 24),
-                          
-                          // Payment method
-                          const Text(
-                            'Payment Method',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          
-                          // Payment method options
-                          Obx(
-                            () => Column(
-                              children: Constants.paymentMethods.map((method) {
-                                return RadioListTile<String>(
-                                  title: Text(_formatPaymentMethod(method)),
-                                  value: method,
-                                  groupValue: controller.selectedPaymentMethod.value,
-                                  onChanged: (value) {
-                                    if (value != null) {
-                                      controller.changePaymentMethod(value);
-                                    }
-                                  },
-                                  activeColor: AppColors.primary,
-                                  contentPadding: EdgeInsets.zero,
-                                );
-                              }).toList(),
-                            ),
-                          ),
-                          
+
                           const SizedBox(height: 32),
                           
                           // Payment button

@@ -48,19 +48,46 @@ class Token {
   }
 }
 
+class TokenPurchaseResponse {
+  final String message;
+  final TokenPayment payment;
+  final String redirectUrl;
+  final String pollUrl;
+  final double units;
+
+  TokenPurchaseResponse({
+    required this.message,
+    required this.payment,
+    required this.redirectUrl,
+    required this.pollUrl,
+    required this.units,
+  });
+
+  factory TokenPurchaseResponse.fromJson(Map<String, dynamic> json) {
+    return TokenPurchaseResponse(
+      message: json['message'],
+      payment: TokenPayment.fromJson(json['payment']),
+      redirectUrl: json['redirectUrl'],
+      pollUrl: json['pollUrl'],
+      units: (json['units'] as num).toDouble(),
+    );
+  }
+}
+
+
 class TokenPayment {
   final String id;
   final String referenceNumber;
   final double amount;
   final String status;
-  final DateTime paidAt;
+  final DateTime? paidAt;
 
   TokenPayment({
     required this.id,
     required this.referenceNumber,
     required this.amount,
     required this.status,
-    required this.paidAt,
+    this.paidAt,
   });
 
   factory TokenPayment.fromJson(Map<String, dynamic> json) {
@@ -69,7 +96,47 @@ class TokenPayment {
       referenceNumber: json['referenceNumber'],
       amount: (json['amount'] as num).toDouble(),
       status: json['status'],
-      paidAt: DateTime.parse(json['paidAt']),
+      paidAt: json['paidAt'] != null ? DateTime.parse(json['paidAt']) : null,
+    );
+  }
+}
+
+class TokenCompleteResponse {
+  final String message;
+  final CompletedToken token;
+
+  TokenCompleteResponse({
+    required this.message,
+    required this.token,
+  });
+
+  factory TokenCompleteResponse.fromJson(Map<String, dynamic> json) {
+    return TokenCompleteResponse(
+      message: json['message'],
+      token: CompletedToken.fromJson(json['token']),
+    );
+  }
+}
+
+class CompletedToken {
+  final String id;
+  final String tokenValue;
+  final double units;
+  final double amount;
+
+  CompletedToken({
+    required this.id,
+    required this.tokenValue,
+    required this.units,
+    required this.amount,
+  });
+
+  factory CompletedToken.fromJson(Map<String, dynamic> json) {
+    return CompletedToken(
+      id: json['id'],
+      tokenValue: json['tokenValue'],
+      units: (json['units'] as num).toDouble(),
+      amount: (json['amount'] as num).toDouble(),
     );
   }
 }

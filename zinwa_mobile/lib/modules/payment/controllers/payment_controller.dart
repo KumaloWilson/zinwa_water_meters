@@ -2,15 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:zinwa_mobile_app/models/property_model.dart';
 import 'package:zinwa_mobile_app/models/rate_model.dart';
-import 'package:zinwa_mobile_app/services/payment_service.dart';
 import 'package:zinwa_mobile_app/services/property_service.dart';
-import 'package:zinwa_mobile_app/utils/constants.dart';
+import 'package:zinwa_mobile_app/services/token_service.dart';
 import 'package:zinwa_mobile_app/utils/ui_helpers.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../routes/app_routes.dart';
+
 class PaymentController extends GetxController {
   final PropertyService _propertyService = Get.find<PropertyService>();
-  final PaymentService _paymentService = Get.find<PaymentService>();
+  final TokenService _tokenService = Get.find<TokenService>();
   
   // Property ID
   late final String propertyId;
@@ -26,10 +27,7 @@ class PaymentController extends GetxController {
   
   // Form controllers
   final amountController = TextEditingController();
-  
-  // Selected payment method
-  final RxString selectedPaymentMethod = Constants.paymentMethods.first.obs;
-  
+
   // Calculated units
   final RxDouble calculatedUnits = 0.0.obs;
   
@@ -105,36 +103,23 @@ class PaymentController extends GetxController {
     }
   }
   
-  // Change payment method
-  void changePaymentMethod(String method) {
-    selectedPaymentMethod.value = method;
-  }
-  
+
   // Process payment
   Future<void> processPayment() async {
     if (formKey.currentState!.validate()) {
       try {
         isProcessing.value = true;
-        
-        // Prepare payment data
-        final paymentData = {
-          'propertyId': propertyId,
-          'amount': double.parse(amountController.text),
-          'paymentMethod': selectedPaymentMethod.value,
-        };
+
         
         // Process payment
-        final result = await _paymentService.createPayment(paymentData);
+        final result = await _tokenService.purchaseToken(
+          amount: double.parse(amountController.text),
+          propertyId: propertyId
+        );
         
         // Check if payment needs redirect
-        if (result['redirectUrl'] != null) {
-          // Launch payment URL
-          final url = Uri.parse(result['redirectUrl']);
-          if (await canLaunchUrl(url)) {
-            await launchUrl(url, mode: LaunchMode.externalApplication);
-          } else {
-            throw 'Could not launch payment URL';
-          }
+        if (result.redirectUrl.isNotEmpty) {
+          Get.toNamed(AppRoutes.PAYNOWWEBVIEW, arguments: result.redirectUrl);
         }
         
         // Show success message

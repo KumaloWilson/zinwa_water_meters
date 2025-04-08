@@ -14,5 +14,6 @@ abstract class AppRoutes {
   static const TOKEN_DETAIL = '/token/:id';
   static const PROFILE = '/profile';
   static const NOTIFICATIONS = '/notifications';
+  static const PAYNOWWEBVIEW = '/paynow-webview';
 }
 
