@@ -116,8 +116,8 @@ class PropertyCard extends StatelessWidget {
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: onMakePayment,
-                      icon: const Icon(Icons.payment_outlined),
-                      label: const Text('Make Payment'),
+                      icon: const Icon(Icons.payment_outlined, color: Colors.white,),
+                      label: const Text('Purchase Token'),
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
