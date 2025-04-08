@@ -4,6 +4,7 @@ import { logger } from "../utils/logger";
 interface PaynowPaymentResponse {
   status: string;
   pollUrl?: string;
+  redirectUrl?: string;
   error?: string;
   transactionReference: string;
 }
@@ -49,6 +50,7 @@ class PaynowService {
         return {
           status: "success",
           pollUrl: response.pollUrl,
+          redirectUrl: response.redirectUrl || response.pollUrl,
           transactionReference: reference,
         };
       } else {

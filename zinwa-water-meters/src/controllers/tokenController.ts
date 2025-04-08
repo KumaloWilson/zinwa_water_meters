@@ -130,7 +130,7 @@ export const purchaseToken = async (req: Request, res: Response) => {
         amount: payment.amount,
         status: payment.status,
       },
-      redirectUrl: paynowResponse.pollUrl,
+      redirectUrl: paynowResponse.redirectUrl || paynowResponse.pollUrl,
       units,
     })
   } catch (error) {
@@ -172,7 +172,7 @@ export const completeTokenPurchase = async (req: Request, res: Response) => {
     // Check payment status from Paynow
     const paynowStatus = await paynowService.checkTransactionStatus(pollurl || payment.pollUrl)
 
-    if (paynowStatus.status.toLowerCase() === "paid" || status === "paid") {
+    if (paynowStatus.status?.toLowerCase() === "paid" || status === "paid" || paynowStatus.paid) {
       // Update payment status
       payment.status = PaymentStatus.COMPLETED
       payment.paidAt = new Date()
@@ -225,7 +225,7 @@ export const completeTokenPurchase = async (req: Request, res: Response) => {
           amount: token.amount,
         },
       })
-    } else if (paynowStatus.status.toLowerCase() === "cancelled" || status === "cancelled") {
+    } else if (paynowStatus.status?.toLowerCase() === "cancelled" || status === "cancelled") {
       // Update payment status
       payment.status = PaymentStatus.FAILED
       payment.paymentDetails = { ...payment.paymentDetails, paynowStatus }
@@ -254,6 +254,7 @@ export const completeTokenPurchase = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error completing token purchase" })
   }
 }
+
 
 // Get all tokens
 export const getAllTokens = async (req: Request, res: Response) => {
