@@ -37,10 +37,10 @@ class PaynowService {
       // Add payment details
       payment.add(description, amount);
       
-      // Set up mobile payment if phone is provided
-      if (phone) {
-        payment.setPhone(phone);
-      }
+      // // Set up mobile payment if phone is provided
+      // if (phone) {
+      //   payment.setPhone(phone);
+      // }
       
       // Send payment to Paynow
       const response = await this.paynow.send(payment);
