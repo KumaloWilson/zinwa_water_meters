@@ -7,12 +7,12 @@ class DashboardStatCard extends StatelessWidget {
   final Color color;
 
   const DashboardStatCard({
-    Key? key,
+    super.key,
     required this.title,
     required this.value,
     required this.icon,
     required this.color,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

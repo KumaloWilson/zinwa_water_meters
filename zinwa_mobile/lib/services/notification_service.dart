@@ -37,6 +37,17 @@ class NotificationService {
     }
   }
 
+  Future<void> deleteNotification(String notificationId) async {
+    try {
+      await _apiService.delete('/notifications/$notificationId');
+    } on DioException catch (e) {
+      throw _handleError(e);
+    } catch (e) {
+      DevLogs.logError(e.toString());
+      throw 'Failed to delete notification: $e';
+    }
+  }
+
   Future<void> markAllAsRead() async {
     try {
       await _apiService.patch('/notifications/read-all', queryParameters: {});

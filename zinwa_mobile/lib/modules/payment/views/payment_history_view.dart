@@ -5,7 +5,7 @@ import 'package:zinwa_mobile_app/theme/app_colors.dart';
 import 'package:zinwa_mobile_app/widgets/payment_list_item.dart';
 
 class PaymentHistoryView extends GetView<PaymentHistoryController> {
-  const PaymentHistoryView({Key? key}) : super(key: key);
+  const PaymentHistoryView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +32,7 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
                         selected: isSelected,
                         onSelected: (_) => controller.changeStatusFilter(status),
                         backgroundColor: Colors.grey[200],
-                        selectedColor: AppColors.primary.withOpacity(0.2),
+                        selectedColor: AppColors.primary.withValues(alpha: 0.2),
                         checkmarkColor: AppColors.primary,
                         labelStyle: TextStyle(
                           color: isSelected ? AppColors.primary : Colors.black,
@@ -45,7 +45,7 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
               ),
             ),
           ),
-          
+
           // Payments list
           Expanded(
             child: Obx(

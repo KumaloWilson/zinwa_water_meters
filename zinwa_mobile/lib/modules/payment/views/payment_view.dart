@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:zinwa_mobile_app/modules/payment/controllers/payment_controller.dart';
 import 'package:zinwa_mobile_app/theme/app_colors.dart';
-import 'package:zinwa_mobile_app/utils/constants.dart';
 import 'package:zinwa_mobile_app/utils/ui_helpers.dart';
 import 'package:zinwa_mobile_app/widgets/custom_button.dart';
 import 'package:zinwa_mobile_app/widgets/custom_text_field.dart';
@@ -340,10 +339,6 @@ class PaymentView extends GetView<PaymentController> {
         ],
       ),
     );
-  }
-
-  String _formatPaymentMethod(String method) {
-    return method.split('_').map((word) => word.capitalize).join(' ');
   }
 }
 

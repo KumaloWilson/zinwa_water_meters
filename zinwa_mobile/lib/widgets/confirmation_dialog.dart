@@ -11,7 +11,7 @@ class ConfirmationDialog extends StatelessWidget {
   final bool isDestructive;
 
   const ConfirmationDialog({
-    Key? key,
+    super.key,
     required this.title,
     required this.message,
     this.confirmText = 'Confirm',
@@ -19,7 +19,7 @@ class ConfirmationDialog extends StatelessWidget {
     required this.onConfirm,
     this.onCancel,
     this.isDestructive = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

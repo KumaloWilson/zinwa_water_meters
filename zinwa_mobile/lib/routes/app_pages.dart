@@ -1,8 +1,10 @@
 import 'package:get/get.dart';
 import 'package:zinwa_mobile_app/models/token_model.dart';
+import 'package:zinwa_mobile_app/modules/payment/views/failure_screen.dart';
 import 'package:zinwa_mobile_app/modules/payment/views/paynow_webview.dart';
 import 'package:zinwa_mobile_app/modules/payment/views/success_screen.dart';
 import '../modules/auth/bindings/auth_binding.dart';
+import '../modules/auth/views/forgot_password.dart';
 import '../modules/auth/views/login_view.dart';
 import '../modules/auth/views/register_view.dart';
 import '../modules/dashboard/bindings/dashboard_binding.dart';
@@ -29,15 +31,17 @@ import '../modules/token/views/token_list_view.dart';
 import 'app_routes.dart';
 
 class AppPages {
+  static const INITIAL = AppRoutes.SPLASH;
+
   static final routes = [
     GetPage(
       name: AppRoutes.SPLASH,
-      page: () => SplashView(),
+      page: () => const SplashView(),
       binding: SplashBinding(),
     ),
     GetPage(
       name: AppRoutes.LOGIN,
-      page: () => LoginView(),
+      page: () => const LoginView(),
       binding: AuthBinding(),
     ),
     GetPage(
@@ -46,83 +50,89 @@ class AppPages {
       binding: AuthBinding(),
     ),
     GetPage(
+      name: AppRoutes.FORGOT_PASSWORD,
+      page: () => const ForgotPasswordView(),
+      binding: AuthBinding(),
+    ),
+    GetPage(
       name: AppRoutes.HOME,
-      page: () => HomeView(),
+      page: () => const HomeView(),
       binding: HomeBinding(),
     ),
     GetPage(
       name: AppRoutes.DASHBOARD,
-      page: () => DashboardView(),
+      page: () => const DashboardView(),
       binding: DashboardBinding(),
     ),
     GetPage(
       name: AppRoutes.PROPERTY_LIST,
-      page: () => PropertyListView(),
+      page: () => const PropertyListView(),
       binding: PropertyBinding(),
     ),
     GetPage(
       name: AppRoutes.PROPERTY_DETAIL,
-      page: () => PropertyDetailView(),
+      page: () => const PropertyDetailView(),
       binding: PropertyBinding(),
     ),
     GetPage(
       name: AppRoutes.METER_READING,
-      page: () => MeterReadingView(),
+      page: () => const MeterReadingView(),
       binding: MeterReadingBinding(),
     ),
     GetPage(
       name: AppRoutes.PAYMENT,
-      page: () => PaymentView(),
+      page: () => const PaymentView(),
       binding: PaymentBinding(),
     ),
     GetPage(
-
       name: AppRoutes.PAYNOWWEBVIEW,
       page: () {
         final TokenPurchaseResponse purchaseResponse = Get.arguments;
-
         return PaymentWebViewScreen(purchaseResponse: purchaseResponse);
       },
       binding: PaymentBinding(),
     ),
-
     GetPage(
-
       name: AppRoutes.PAYMENT_SUCCESS,
       page: () {
-        final TokenPurchaseResponse purchaseResponse = Get.arguments;
-
-
-        return SuccessScreen(purchaseResponse: purchaseResponse);
+        final TokenPurchaseResponse? purchaseResponse = Get.arguments;
+        return SuccessScreen(purchaseResponse: purchaseResponse!);
       },
       binding: PaymentBinding(),
     ),
-
+    GetPage(
+      name: AppRoutes.PAYMENT_FAILURE,
+      page: () {
+        final String reason = Get.parameters['reason'] ?? 'Payment failed';
+        final String propertyId = Get.parameters['propertyId'] ?? '';
+        return FailureScreen(reason: reason, propertyId: propertyId);
+      },
+      binding: PaymentBinding(),
+    ),
     GetPage(
       name: AppRoutes.PAYMENT_HISTORY,
-      page: () => PaymentHistoryView(),
+      page: () => const PaymentHistoryView(),
       binding: PaymentBinding(),
     ),
     GetPage(
       name: AppRoutes.TOKEN_LIST,
-      page: () => TokenListView(),
+      page: () => const TokenListView(),
       binding: TokenBinding(),
     ),
     GetPage(
       name: AppRoutes.TOKEN_DETAIL,
-      page: () => TokenDetailView(),
+      page: () => const TokenDetailView(),
       binding: TokenBinding(),
     ),
     GetPage(
       name: AppRoutes.PROFILE,
-      page: () => ProfileView(),
+      page: () => const ProfileView(),
       binding: ProfileBinding(),
     ),
     GetPage(
       name: AppRoutes.NOTIFICATIONS,
-      page: () => NotificationView(),
+      page: () => const NotificationView(),
       binding: NotificationBinding(),
     ),
   ];
 }
-
