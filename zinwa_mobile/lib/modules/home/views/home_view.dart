@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:zinwa_mobile_app/modules/dashboard/views/dashboard_view.dart';
 import 'package:zinwa_mobile_app/modules/home/controllers/home_controller.dart';
 import 'package:zinwa_mobile_app/modules/notifications/controllers/notification_controller.dart';
+import 'package:zinwa_mobile_app/modules/notifications/views/notification_view.dart';
 import 'package:zinwa_mobile_app/modules/payment/views/payment_history_view.dart';
 import 'package:zinwa_mobile_app/modules/profile/views/profile_view.dart';
 import 'package:zinwa_mobile_app/modules/property/views/property_list_view.dart';
@@ -26,6 +27,8 @@ class HomeView extends GetView<HomeController> {
           case 2:
             return const PaymentHistoryView();
           case 3:
+            return const NotificationView();
+          case 4:
             return const ProfileView();
           default:
             return const DashboardView();
@@ -53,6 +56,45 @@ class HomeView extends GetView<HomeController> {
               icon: Icon(Icons.payment_outlined),
               activeIcon: Icon(Icons.payment),
               label: 'Payments',
+            ),
+            BottomNavigationBarItem(
+              icon: Stack(
+                children: [
+                  const Icon(Icons.notifications),
+                  Obx(() {
+                    final unreadCount = notificationController.unreadCount.value;
+                    if (unreadCount > 0) {
+                      return Positioned(
+                        right: 0,
+                        top: 0,
+                        child: Container(
+                          padding: const EdgeInsets.all(2),
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          constraints: const BoxConstraints(
+                            minWidth: 14,
+                            minHeight: 14,
+                          ),
+                          child: Text(
+                            unreadCount > 9 ? '9+' : '$unreadCount',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 8,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      );
+                    } else {
+                      return const SizedBox.shrink();
+                    }
+                  }),
+                ],
+              ),
+              label: 'Notifications',
             ),
             BottomNavigationBarItem(
               icon: Stack(
