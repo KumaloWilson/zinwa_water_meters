@@ -57,7 +57,7 @@ class TokenService extends GetxService {
   }
 
   // Complete token purchase
-  Future<TokenCompleteResponse> completeTokenPurchase(String reference, String status, String pollUrl) async {
+  Future<TokenCompleteResponse> completeTokenPurchase({required String reference, required String status, required String pollUrl}) async {
     try {
       final response = await _apiService.post('/tokens/complete', data: {
         'reference': reference,

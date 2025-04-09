@@ -7,15 +7,29 @@ import 'package:zinwa_mobile_app/utils/ui_helpers.dart';
 class NotificationController extends GetxController {
   final NotificationService _notificationService = Get.find<NotificationService>();
 
+  // Notifications list
   final RxList<NotificationModel> notifications = <NotificationModel>[].obs;
+
+  // Loading and error states
   final RxBool isLoading = false.obs;
   final RxString error = ''.obs;
+
+  // Unread notifications flag
   final RxBool hasUnreadNotifications = false.obs;
+
+  // Unread count for badge
+  final RxInt unreadCount = 0.obs;
 
   @override
   void onInit() {
     super.onInit();
     fetchNotifications();
+
+    // Set up periodic refresh (every 5 minutes)
+    ever(unreadCount, (_) => _updateAppBadge());
+
+    // Schedule periodic refresh
+    _schedulePeriodicRefresh();
   }
 
   Future<void> fetchNotifications() async {
@@ -25,7 +39,7 @@ class NotificationController extends GetxController {
     try {
       final result = await _notificationService.getNotifications();
       notifications.value = result;
-      _checkUnreadNotifications();
+      _updateUnreadStatus();
     } catch (e) {
       error.value = e.toString();
       UIHelpers.showErrorSnackbar('Failed to load notifications', e.toString());
@@ -34,8 +48,11 @@ class NotificationController extends GetxController {
     }
   }
 
-  void _checkUnreadNotifications() {
-    hasUnreadNotifications.value = notifications.any((notification) => !notification.isRead);
+  void _updateUnreadStatus() {
+    // Update both the hasUnreadNotifications flag and the unreadCount
+    final unreadNotifications = notifications.where((notification) => !notification.isRead);
+    hasUnreadNotifications.value = unreadNotifications.isNotEmpty;
+    unreadCount.value = unreadNotifications.length;
   }
 
   Future<void> markAsRead(String notificationId) async {
@@ -47,7 +64,7 @@ class NotificationController extends GetxController {
       if (index != -1) {
         final updatedNotification = notifications[index].copyWith(isRead: true);
         notifications[index] = updatedNotification;
-        _checkUnreadNotifications();
+        _updateUnreadStatus();
       }
 
       UIHelpers.showSuccessSnackbar('Success', 'Notification marked as read');
@@ -66,7 +83,7 @@ class NotificationController extends GetxController {
       ).toList();
 
       notifications.value = updatedNotifications;
-      hasUnreadNotifications.value = false;
+      _updateUnreadStatus();
 
       UIHelpers.showSuccessSnackbar('Success', 'All notifications marked as read');
     } catch (e) {
@@ -121,5 +138,60 @@ class NotificationController extends GetxController {
         );
     }
   }
-}
 
+  // Delete notification
+  Future<void> deleteNotification(String notificationId) async {
+    try {
+      await _notificationService.deleteNotification(notificationId);
+
+      // Remove from local list
+      notifications.removeWhere((n) => n.id == notificationId);
+
+      // Update unread status
+      _updateUnreadStatus();
+
+      UIHelpers.showSuccessSnackbar('Success', 'Notification deleted');
+    } catch (e) {
+      UIHelpers.showErrorSnackbar('Error', 'Failed to delete notification');
+    }
+  }
+
+  // Update app badge (if supported)
+  void _updateAppBadge() {
+    // This would integrate with platform-specific badge APIs
+    // For example, using flutter_app_badger package
+    // AppBadger.updateBadgeCount(unreadCount.value);
+  }
+
+  // Schedule periodic refresh
+  void _schedulePeriodicRefresh() {
+    // Refresh every 5 minutes
+    Future.delayed(const Duration(minutes: 5), () {
+      fetchNotifications();
+      _schedulePeriodicRefresh();
+    });
+  }
+
+  // Get formatted time
+  String getFormattedTime(DateTime dateTime) {
+    final now = DateTime.now();
+    final difference = now.difference(dateTime);
+
+    if (difference.inDays > 7) {
+      // More than a week ago, show the date
+      return '${dateTime.day}/${dateTime.month}/${dateTime.year}';
+    } else if (difference.inDays > 0) {
+      // Days ago
+      return '${difference.inDays}d ago';
+    } else if (difference.inHours > 0) {
+      // Hours ago
+      return '${difference.inHours}h ago';
+    } else if (difference.inMinutes > 0) {
+      // Minutes ago
+      return '${difference.inMinutes}m ago';
+    } else {
+      // Just now
+      return 'Just now';
+    }
+  }
+}

@@ -15,5 +15,7 @@ abstract class AppRoutes {
   static const PROFILE = '/profile';
   static const NOTIFICATIONS = '/notifications';
   static const PAYNOWWEBVIEW = '/paynow-webview';
+  static const PAYMENT_SUCCESS = '/payment-success';
+  static const PAYMENT_FAILURE = '/payment-failure';
 }
 

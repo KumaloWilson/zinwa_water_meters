@@ -46,15 +46,16 @@ class PaymentService extends GetxService {
   }
 
   // Create a new payment
-  Future<Map<String, dynamic>> createPayment(Map<String, dynamic> paymentData) async {
+  Future<String> checkPaymentStatus(String pollUrl) async {
     try {
-      final response = await _apiService.post('/payments', data: paymentData);
-      return response.data;
+      final response = await _apiService.post('/payments/check-payment-status', data: {"pollurl": pollUrl});
+      return response.data['paynowStatus']['status'];
     } catch (e) {
       DevLogs.logError(e.toString());
       rethrow;
     }
   }
+
 
   // Verify payment
   Future<Map<String, dynamic>> verifyPayment(String paymentReference) async {
