@@ -34,9 +34,11 @@ import {
   CheckCircleOutlined,
   CloseCircleOutlined,
   BankOutlined,
-  ThunderboltOutlined,
   BarcodeOutlined
 } from '@ant-design/icons';
+// Import custom water droplet icon component
+import { IoWaterOutline } from "react-icons/io5";
+
 import tokenService from '../../services/tokenService/tokenService';
 
 const { Title, Text } = Typography;
@@ -71,7 +73,7 @@ export default function TokenManagement() {
         setLoading(false);
       })
       .catch((error) => {
-        message.error('Error fetching tokens');
+        message.error('Error fetching water tokens');
         console.log(error);
         setLoading(false);
       });
@@ -119,7 +121,7 @@ export default function TokenManagement() {
 
   const columns = [
     {
-      title: 'Token',
+      title: 'Water Token',
       dataIndex: 'tokenValue',
       key: 'tokenValue',
       render: (text) => (
@@ -129,10 +131,10 @@ export default function TokenManagement() {
       )
     },
     {
-      title: 'Units',
+      title: 'Water Volume',
       dataIndex: 'units',
       key: 'units',
-      render: (units) => `${parseFloat(units).toFixed(2)} kWh`,
+      render: (units) => `${parseFloat(units).toFixed(2)} m³`,
       sorter: (a, b) => a.units - b.units
     },
     {
@@ -142,7 +144,7 @@ export default function TokenManagement() {
       sorter: (a, b) => a.property?.propertyName?.localeCompare(b.property?.propertyName)
     },
     {
-      title: 'Meter',
+      title: 'Water Meter',
       key: 'meter',
       render: (_, record) => record?.property?.meterNumber || 'N/A'
     },
@@ -209,7 +211,7 @@ export default function TokenManagement() {
   const activeTokensCount = tokensData.filter(token => !token.isUsed && new Date(token.expiresAt) >= new Date()).length;
   const usedTokensCount = tokensData.filter(token => token.isUsed).length;
   const expiredTokensCount = tokensData.filter(token => !token.isUsed && new Date(token.expiresAt) < new Date()).length;
-  const totalUnits = tokensData.reduce((sum, token) => sum + parseFloat(token.units || 0), 0);
+  const totalWaterVolume = tokensData.reduce((sum, token) => sum + parseFloat(token.units || 0), 0);
 
   return (
     <div className="p-4">
@@ -217,7 +219,7 @@ export default function TokenManagement() {
         <Col span={6}>
           <Card>
             <Statistic 
-              title="Total Tokens" 
+              title="Total Water Tokens" 
               value={totalCount} 
               prefix={<KeyOutlined />} 
             />
@@ -226,7 +228,7 @@ export default function TokenManagement() {
         <Col span={6}>
           <Card>
             <Statistic
-              title="Active Tokens"
+              title="Active Water Tokens"
               value={activeTokensCount}
               valueStyle={{ color: '#3f8600' }}
               prefix={<SafetyOutlined />}
@@ -236,7 +238,7 @@ export default function TokenManagement() {
         <Col span={6}>
           <Card>
             <Statistic
-              title="Used Tokens"
+              title="Used Water Tokens"
               value={usedTokensCount}
               valueStyle={{ color: '#1890ff' }}
               prefix={<CheckCircleOutlined />}
@@ -246,11 +248,11 @@ export default function TokenManagement() {
         <Col span={6}>
           <Card>
             <Statistic
-              title="Total Units"
-              value={totalUnits.toFixed(2)}
-              valueStyle={{ color: '#722ed1' }}
-              prefix={<ThunderboltOutlined />}
-              suffix="kWh"
+              title="Total Water Volume"
+              value={totalWaterVolume.toFixed(2)}
+              valueStyle={{ color: '#0096c7' }}
+              prefix={<IoWaterOutline />}
+              suffix="m³"
             />
           </Card>
         </Col>
@@ -265,7 +267,7 @@ export default function TokenManagement() {
             style={{ width: 250 }}
           />
           <Input
-            placeholder="Search by Property/Meter"
+            placeholder="Search by Property/Water Meter"
             prefix={<HomeOutlined />}
             value={searchProperty}
             onChange={(e) => setSearchProperty(e.target.value)}
@@ -307,12 +309,12 @@ export default function TokenManagement() {
         />
       </Card>
 
-      {/* Token Details Drawer */}
+      {/* Water Token Details Drawer */}
       <Drawer
         title={
           <Space>
             <KeyOutlined style={{ fontSize: '18px', color: '#1890ff' }} />
-            <span style={{ fontSize: '18px', fontWeight: 'bold' }}>Token Details</span>
+            <span style={{ fontSize: '18px', fontWeight: 'bold' }}>Water Token Details</span>
           </Space>
         }
         placement="right"
@@ -327,7 +329,7 @@ export default function TokenManagement() {
             {/* Header Banner */}
             <div
               style={{
-                background: 'linear-gradient(135deg, #722ed1 0%, #1890ff 100%)',
+                background: 'linear-gradient(135deg, #0077b6 0%, #48cae4 100%)',
                 padding: '24px',
                 color: 'white',
                 borderRadius: '0 0 8px 8px'
@@ -355,8 +357,8 @@ export default function TokenManagement() {
                       {formatTokenStatus(selectedToken.isUsed, selectedToken.expiresAt).text}
                     </Tag>
                     <div style={{ marginLeft: '12px', display: 'flex', alignItems: 'center' }}>
-                      <ThunderboltOutlined style={{ marginRight: '4px' }} />
-                      <span>{parseFloat(selectedToken.units).toFixed(2)} kWh</span>
+                      <IoWaterOutline style={{ marginRight: '4px' }} />
+                      <span>{parseFloat(selectedToken.units).toFixed(2)} m³</span>
                     </div>
                   </div>
                 </Col>
@@ -384,13 +386,13 @@ export default function TokenManagement() {
                   <Col span={12}>
                     <Card bordered={false} style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.09)' }}>
                       <Statistic
-                        title={<span style={{ fontSize: '14px' }}>Units</span>}
+                        title={<span style={{ fontSize: '14px' }}>Water Volume</span>}
                         value={selectedToken.units}
                         precision={2}
-                        prefix={<ThunderboltOutlined />}
-                        suffix="kWh"
+                        prefix={<IoWaterOutline />}
+                        suffix="m³"
                         valueStyle={{
-                          color: '#722ed1',
+                          color: '#0096c7',
                           fontSize: '20px'
                         }}
                       />
@@ -554,7 +556,7 @@ export default function TokenManagement() {
                           <Col span={10}>
                             <div style={{ display: 'flex', alignItems: 'center' }}>
                               <NumberOutlined style={{ marginRight: '8px', color: '#8c8c8c' }} />
-                              <span>Meter: {selectedToken.property.meterNumber}</span>
+                              <span>Water Meter: {selectedToken.property.meterNumber}</span>
                             </div>
                           </Col>
                         </Row>

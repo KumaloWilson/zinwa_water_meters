@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 
 // material-ui
 import Button from '@mui/material/Button';
@@ -26,13 +25,11 @@ import { Formik } from 'formik';
 // project imports
 import IconButton from 'components/@extended/IconButton';
 import AnimateButton from 'components/@extended/AnimateButton';
+import authService from 'services/authService/authService';
 
 // assets
 import EyeOutlined from '@ant-design/icons/EyeOutlined';
 import EyeInvisibleOutlined from '@ant-design/icons/EyeInvisibleOutlined';
-
-// API constants
-const API_BASE_URL = 'https://zinwa.onrender.com/api';
 
 // ============================|| JWT - LOGIN ||============================ //
 
@@ -42,8 +39,20 @@ export default function AuthLogin({ isDemo = false }) {
   const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState('');
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
   
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Check for auth error passed from ProtectedRoute
+  useEffect(() => {
+    if (location.state?.authError) {
+      setApiError(location.state.authError);
+      // Clean up the location state to prevent showing the error again on refresh
+      window.history.replaceState({}, document.title);
+    }
+  }, [location]);
   
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
@@ -56,38 +65,42 @@ export default function AuthLogin({ isDemo = false }) {
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
   };
+  
+  const showNotification = (message, severity = 'success') => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarOpen(true);
+  };
 
   const handleLoginSubmit = async (values, { setSubmitting }) => {
     setLoading(true);
     setApiError('');
     
     try {
-      const response = await axios.post(`${API_BASE_URL}/auth/login`, {
-        email: values.email,
-        password: values.password
-      });
-      
-      // Store token and user data
-      localStorage.setItem('auth_token', response.data.token);
-      localStorage.setItem('user_data', JSON.stringify(response.data.user));
-      
-      // Remember me functionality
+      // Remember me functionality - save before potential error
       if (checked) {
         localStorage.setItem('remembered_email', values.email);
       } else {
         localStorage.removeItem('remembered_email');
       }
       
-      setSnackbarOpen(true);
+      // Use the auth service to handle login
+      await authService.login({
+        email: values.email,
+        password: values.password
+      });
+      
+      showNotification('Login successful! Redirecting to dashboard...');
       
       // Redirect to dashboard after a short delay
       setTimeout(() => {
-        navigate('/dashboard/default');
+        navigate('/admin-dashboard');
       }, 1000);
       
     } catch (error) {
       console.error('Login error:', error);
-      setApiError(error.response?.data?.message || 'An error occurred during login');
+      setApiError(typeof error === 'string' ? error : 'An error occurred during login');
+      showNotification(typeof error === 'string' ? error : 'An error occurred during login', 'error');
     } finally {
       setLoading(false);
       setSubmitting(false);
@@ -105,8 +118,8 @@ export default function AuthLogin({ isDemo = false }) {
         onClose={handleSnackbarClose}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
-        <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
-          Login successful! Redirecting to dashboard...
+        <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '100%' }}>
+          {snackbarMessage}
         </Alert>
       </Snackbar>
       

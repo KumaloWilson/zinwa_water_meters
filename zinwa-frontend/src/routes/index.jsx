@@ -5,47 +5,52 @@ import MainRoutes from './MainRoutes';
 import LoginRoutes from './LoginRoutes';
 import authService from '../services/authService/authService';
 
-// This is a simple auth check - replace with your actual auth logic
-// const isAuthenticated = () => {
-//   return localStorage.getItem('auth_token') !== null;
-// };
-
-// Protected route wrapper
+// Protected route wrapper with role-based access control
 const ProtectedRoute = ({ children }) => {
-    if (!authService.isAuthenticated()) {
-      // Redirect to login if not authenticated
-      return <Navigate to="/login" replace />;
-    }
+  if (!authService.isAuthenticated()) {
+    // Redirect to login if not authenticated
+    return <Navigate to="/login" replace />;
+  }
   
-    return children;
-  };
+  // Check if user has required role (admin or super_admin)
+  if (!authService.isAuthorized()) {
+    // Clear invalid session and redirect to login
+    authService.logout();
+    return <Navigate 
+      to="/login" 
+      replace 
+      state={{ 
+        authError: 'Access denied. Only administrators can access this system.' 
+      }} 
+    />;
+  }
+  
+  return children;
+};
 
 // Modify MainRoutes to include protection
-const protectedMainRoutes = {
-  ...MainRoutes,
+const protectedMainRoutes = { 
+  ...MainRoutes, 
   element: <ProtectedRoute>{MainRoutes.element}</ProtectedRoute>,
-  children: MainRoutes.children.map(route => ({
-    ...route,
-    // You can choose which routes need protection
-    element: <ProtectedRoute>{route.element}</ProtectedRoute>
-  }))
+  children: MainRoutes.children.map(route => ({ 
+    ...route, 
+    element: <ProtectedRoute>{route.element}</ProtectedRoute> 
+  })) 
 };
 
 // Public routes (like login) don't need protection
-const publicRoutes = {
-  path: '/',
+const publicRoutes = { 
+  path: '/', 
   children: [
-    {
-      path: '/',
-      element: <Navigate to="/login" replace />
-    },
+    { path: '/', element: <Navigate to="/login" replace /> },
     ...LoginRoutes.children
-  ]
+  ] 
 };
 
 // Create the router with public routes first
-const router = createBrowserRouter([publicRoutes, protectedMainRoutes], { 
-  basename: import.meta.env.VITE_APP_BASE_NAME 
-});
+const router = createBrowserRouter(
+  [publicRoutes, protectedMainRoutes], 
+  { basename: import.meta.env.VITE_APP_BASE_NAME }
+);
 
 export default router;

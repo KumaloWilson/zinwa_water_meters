@@ -11,6 +11,7 @@ const AdminDashboard = Loadable(lazy(() => import('pages/dashboard/admin-dashboa
 
 // render - color
 const Color = Loadable(lazy(() => import('pages/component-overview/color')));
+const MeterReadings = Loadable(lazy(() => import('pages/meter-readings/MeterReadingsManagement')))
 const RateManagement = Loadable(lazy(() => import('pages/rates/RatesManagement')));
 const TokenManagement = Loadable(lazy(() => import('pages/tokens/TokenManagement')));
 const PaymentManagement = Loadable(lazy(() => import('pages/payments/PaymentManagement')));
@@ -87,6 +88,10 @@ const MainRoutes = {
     {
       path: 'rates',
       element: <RateManagement />
+    },
+    {
+      path: 'meter-readings',
+      element: <MeterReadings />
     },
     // /RateManagement
     
