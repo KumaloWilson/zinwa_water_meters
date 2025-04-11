@@ -36,7 +36,7 @@ const icons = {
 
 const utilities = {
   id: 'utilities',
-  title: 'Utilities',
+  title: '',
   type: 'group',
   children: [
     {
@@ -44,56 +44,64 @@ const utilities = {
       title: 'Admin Dashboard',
       type: 'item',
       url: '/admin-dashboard',
-      icon: icons.UsergroupAddOutlined
+      icon: icons.UsergroupAddOutlined,
+      breadcrumbs: false
     },
     {
       id: 'util-users',
       title: 'Users',
       type: 'item',
       url: '/users',
-      icon: icons.UsergroupAddOutlined
+      icon: icons.UsergroupAddOutlined,
+      breadcrumbs: false
     },
     {
       id: 'util-properties',
       title: 'Properties',
       type: 'item',
       url: '/properties',
-      icon: icons.HomeOutlined
+      icon: icons.HomeOutlined,
+      breadcrumbs: false
     },
     {
       id: 'util-payments',
       title: 'Payments',
       type: 'item',
       url: '/payments',
-      icon: icons.MoneyCollectOutlined
+      icon: icons.MoneyCollectOutlined,
+      breadcrumbs: false
     },
     {
       id: 'util-tokens',
       title: 'Tokens',
       type: 'item',
       url: '/tokens',
-      icon: icons.FontSizeOutlined
+      icon: icons.FontSizeOutlined,
+      breadcrumbs: false
     },
     {
       id: 'util-notifications',
       title: 'Notifications',
       type: 'item',
       url: '/notifications',
-      icon: icons.AlertOutlined
+      icon: icons.AlertOutlined,
+      breadcrumbs: false
     },
     {
       id: 'util-meter-readings',
       title: 'Meter Readings',
       type: 'item',
       url: '/meter-readings',
-      icon: icons.ReadOutlined
+      icon: icons.ReadOutlined,
+      breadcrumbs: false
     },
     {
       id: 'util-rates',
       title: 'Rates',
       type: 'item',
       url: '/rates',
-      icon: icons.DollarOutlined
+      icon: icons.DollarOutlined,
+      breadcrumbs: false
     },
     // {
     //   id: 'util-typography',

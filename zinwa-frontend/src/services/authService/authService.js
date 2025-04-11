@@ -30,11 +30,18 @@ const authService = {
   async login(credentials) {
     try {
       const response = await api.post('/auth/login', credentials);
+      
+      // Check if user is admin or super_admin before setting token
+      const userRole = response.data.user.role;
+      if (userRole !== 'admin' && userRole !== 'super_admin') {
+        throw new Error('Not authorized. Only administrators can access this system.');
+      }
+      
       this.setToken(response.data.token);
       this.setUserData(response.data.user);
       return response.data;
     } catch (error) {
-      throw error.response?.data?.message || 'Login failed';
+      throw error.response?.data?.message || error.message || 'Login failed';
     }
   },
 
@@ -111,6 +118,17 @@ const authService = {
    */
   isAuthenticated() {
     return !!this.getToken();
+  },
+
+  /**
+   * Check if user has admin or super_admin role
+   */
+  isAuthorized() {
+    const userData = this.getUserData();
+    if (!userData) return false;
+    
+    const role = userData.role;
+    return role === 'admin' || role === 'super_admin';
   },
 
   /**

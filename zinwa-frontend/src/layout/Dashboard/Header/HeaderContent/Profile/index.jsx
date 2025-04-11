@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -29,9 +29,19 @@ import LogoutOutlined from '@ant-design/icons/LogoutOutlined';
 import SettingOutlined from '@ant-design/icons/SettingOutlined';
 import UserOutlined from '@ant-design/icons/UserOutlined';
 import avatar1 from 'assets/images/users/avatar-1.png';
+import authService from '../../../../../services/authService/authService';
+import { useNavigate } from 'react-router';
+
+
 
 // tab panel wrapper
-function TabPanel({ children, value, index, ...other }) {
+function TabPanel({ children, value, index, ...other  }) {
+
+ 
+
+ 
+
+
   return (
     <div role="tabpanel" hidden={value !== index} id={`profile-tabpanel-${index}`} aria-labelledby={`profile-tab-${index}`} {...other}>
       {value === index && children}
@@ -48,7 +58,41 @@ function a11yProps(index) {
 
 // ==============================|| HEADER CONTENT - PROFILE ||============================== //
 
-export default function Profile() {
+export default function Profile({onLogout}) {
+  const navigate = useNavigate();
+
+  const [userData, setUserData] = useState(null);
+
+
+  const handleLogout = () => {
+    authService.logout();
+    if (onLogout) onLogout();
+    // Redirect to login page or refresh the app state
+    navigate('/login');
+  };
+
+  useEffect(() => {
+    // Get user data from localStorage on component mount
+    const user = authService.getUserData();
+    if (user) {
+      setUserData(user);
+    }
+  }, []);
+
+  function formatRoleText(roleText) {
+    // Split by underscore
+    const words = roleText.split('_');
+    
+    // Capitalize first letter of each word
+    const capitalizedWords = words.map(word => 
+      word.charAt(0).toUpperCase() + word.slice(1)
+    );
+    
+    // Join with a space
+    return capitalizedWords.join(' ');
+  }
+
+  console.log('User Data:', userData);
   const theme = useTheme();
 
   const anchorRef = useRef(null);
@@ -90,7 +134,7 @@ export default function Profile() {
         <Stack direction="row" sx={{ gap: 1.25, alignItems: 'center', p: 0.5 }}>
           <Avatar alt="profile user" src={avatar1} size="sm" />
           <Typography variant="subtitle1" sx={{ textTransform: 'capitalize' }}>
-            John Doe
+            {userData ? userData.firstName : ''} {userData ? userData.lastName : ''}
           </Typography>
         </Stack>
       </ButtonBase>
@@ -123,20 +167,21 @@ export default function Profile() {
                         <Stack direction="row" sx={{ gap: 1.25, alignItems: 'center' }}>
                           <Avatar alt="profile user" src={avatar1} sx={{ width: 32, height: 32 }} />
                           <Stack>
-                            <Typography variant="h6">John Doe</Typography>
+                            <Typography variant="h6">{userData?.firstName} {userData?.lastName}</Typography>
+                            <Typography variant="h6">{userData?.email}</Typography>
                             <Typography variant="body2" color="text.secondary">
-                              UI/UX Designer
+                            {userData?.role ? formatRoleText(userData.role) : ''}
                             </Typography>
                           </Stack>
                         </Stack>
                       </Grid>
-                      <Grid>
+                      {/* <Grid>
                         <Tooltip title="Logout">
-                          <IconButton size="large" sx={{ color: 'text.primary' }}>
+                          <IconButton size="large" sx={{ color: 'text.primary' }} onClick={handleLogout}>
                             <LogoutOutlined />
                           </IconButton>
                         </Tooltip>
-                      </Grid>
+                      </Grid> */}
                     </Grid>
                   </CardContent>
 
@@ -177,7 +222,7 @@ export default function Profile() {
                     </Tabs>
                   </Box>
                   <TabPanel value={value} index={0} dir={theme.direction}>
-                    <ProfileTab />
+                    <ProfileTab handleLogout={handleLogout}/>
                   </TabPanel>
                   <TabPanel value={value} index={1} dir={theme.direction}>
                     <SettingTab />

@@ -30,6 +30,7 @@ import { strengthColor, strengthIndicator } from 'utils/password-strength';
 // assets
 import EyeOutlined from '@ant-design/icons/EyeOutlined';
 import EyeInvisibleOutlined from '@ant-design/icons/EyeInvisibleOutlined';
+import authService from '../../services/authService/authService';
 
 
 
@@ -130,7 +131,7 @@ export default function AuthRegister() {
           password: Yup.string()
             .required('Password is required')
             .test('no-leading-trailing-whitespace', 'Password cannot start or end with spaces', (value) => value === value.trim())
-            .max(10, 'Password must be less than 10 characters'),
+            .max(20, 'Password must be less than 10 characters'),
           phoneNumber: Yup.string().matches(/^\+?[0-9]{10,15}$/, 'Phone number must be valid')
         })}
         onSubmit={handleRegister}

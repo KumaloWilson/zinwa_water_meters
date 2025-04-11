@@ -138,12 +138,12 @@ export default function UserManagement() {
   );
 
   const columns = [
-    {
-      title: 'User ID',
-      dataIndex: 'id',
-      key: 'id',
-      sorter: (a, b) => a.id.localeCompare(b.id)
-    },
+    // {
+    //   title: 'User ID',
+    //   dataIndex: 'id',
+    //   key: 'id',
+    //   sorter: (a, b) => a.id.localeCompare(b.id)
+    // },
     {
       title: 'First Name',
       dataIndex: 'firstName',

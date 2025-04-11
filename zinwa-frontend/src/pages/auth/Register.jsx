@@ -23,7 +23,7 @@ export default function Register() {
             </Typography>
           </Stack>
         </Grid>
-        <Grid size={12}>
+        <Grid size={12}> 
           <FirebaseRegister />
         </Grid>
       </Grid>
