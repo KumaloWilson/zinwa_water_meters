@@ -125,7 +125,7 @@ const propertyService = {
    */
   async changePropertyOwner(propertyId, ownerData) {
     try {
-      const response = await api.patch(`/properties/${propertyId}/owner`, ownerData); 
+      const response = await api.patch(`/properties/${propertyId}/onwer`, ownerData); 
       return response.data;
     } catch (error) {
       console.error(`Error changing owner for property ${propertyId}:`, error);

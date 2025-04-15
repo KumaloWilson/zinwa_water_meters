@@ -82,7 +82,7 @@ const meterReadingService = {
    */
   async getLatestMeterReadingByPropertyId(propertyId) {
     try {
-      const response = await api.get(`/meter-readings/property/${propertyId}/latest`);
+      const response = await api.get(`/meter-readings/property/${propertyId}`);
       return response.data;
     } catch (error) {
       console.error(`Error fetching latest meter reading for property ${propertyId}:`, error);

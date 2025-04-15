@@ -1,7 +1,8 @@
 import { Button, Form, Input, message } from 'antd';
+import PhoneInput from 'antd-phone-input';
 import React, { useEffect } from 'react';
 
-export default function UpdateUserModal({ handleUpdateUser, selectedEmployee  }) {
+export default function UpdateUserModal({ handleUpdateUser, selectedEmployee, loading  }) {
   const [editEmployeeForm] = Form.useForm();
   
   // When selectedEmployee changes, reset form fields with that data
@@ -22,19 +23,30 @@ export default function UpdateUserModal({ handleUpdateUser, selectedEmployee  })
 
   return (
     <Form form={editEmployeeForm} layout="vertical" onFinish={handleSubmit}>
-      <Form.Item
-        name="phoneNumber"
-        label="Phone Number"
-        rules={[
-          { required: true, message: 'Please enter your phone number' },
-          {
-            pattern: /^\+[0-9]{1,3}[0-9\s.-]{7,}$/,
-            message: 'Phone number must start with + followed by country code'
-          }
-        ]}
-      >
-        <Input placeholder="+1 234 567 8900" />
-      </Form.Item>
+        <Form.Item
+          name="phoneNumber"
+          label="Phone Number"
+          rules={[
+            { required: true, message: 'Please enter phone number' }
+          ]}
+          // Transform the complex object into a simple string format
+          getValueProps={(value) => {
+            return { value }; // Pass through the value as-is for the component
+          }}
+          // When form collects values, transform from complex object to simple string
+          getValueFromEvent={(data) => {
+            if (!data) return undefined;
+            
+            // Format as international number: +[countryCode][areaCode][phoneNumber]
+            return `+${data.countryCode}${data.areaCode || ''}${data.phoneNumber || ''}`;
+          }}
+        >
+          <PhoneInput
+            defaultCountry="zw" 
+            placeholder="778 123456"
+          />
+        </Form.Item>
+      
 
       <Form.Item
         name="email"
