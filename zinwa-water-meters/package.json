@@ -16,7 +16,7 @@
   "author": "Wilson Kumalo",
   "license": "MIT",
   "dependencies": {
-    "axios": "^1.7.9",
+    "axios": "^1.8.4",
     "bcrypt": "^5.1.1",
     "compression": "^1.7.5",
     "cookie-parser": "^1.4.7",
