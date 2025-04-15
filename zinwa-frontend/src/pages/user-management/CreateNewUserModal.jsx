@@ -2,12 +2,14 @@ import { HomeOutlined, MailOutlined, PhoneOutlined, UserOutlined } from '@ant-de
 import { Button, Col, Form, Input, Row, message } from 'antd';
 import React, { useState, useEffect } from 'react';
 import userService from '../../services/userService/userService';
+import PhoneInput  from 'antd-phone-input';
+// import 'antd-phone-input/dist/index.css';
 
 export default function CreateNewUserModal({setIsAddEmployeeModalVisible, refreshState}) {
   const [addEmployeeForm] = Form.useForm();
   const [formValues, setFormValues] = useState({});
   const [loading, setLoading] = useState(false);
-
+   
   // Watch first_name and last_name fields to auto-generate username
   useEffect(() => {
     const { firstName, lastName } = formValues;
@@ -30,6 +32,10 @@ export default function CreateNewUserModal({setIsAddEmployeeModalVisible, refres
   // Handle form submission
   const handleSubmit = (values) => {
     setLoading(true);
+    if (values.phoneNumber && typeof values.phoneNumber === 'object') {
+      const phoneData = values.phoneNumber;
+      values.phoneNumber = `+${phoneData.countryCode}${phoneData.areaCode || ''}${phoneData.phoneNumber || ''}`;
+    }
     
     const userData = {
       firstName: values.firstName,
@@ -37,9 +43,10 @@ export default function CreateNewUserModal({setIsAddEmployeeModalVisible, refres
       email: values.email,
       password: values.password,
       phoneNumber: values.phoneNumber,
-      username: values.username
+      username: values.username,
+      role: "customer"
     };
-
+console.log(userData)
     userService.createUser(userData)
       .then((response) => {
         message.success(`Successfully Created User: ${values.firstName} ${values.lastName}`);
@@ -99,7 +106,7 @@ export default function CreateNewUserModal({setIsAddEmployeeModalVisible, refres
               <Input prefix={<MailOutlined />} />
             </Form.Item>
           </Col>
-          <Col span={12}>
+          {/* <Col span={12}>
             <Form.Item
               name="phoneNumber"
               label="Phone Number"
@@ -113,7 +120,32 @@ export default function CreateNewUserModal({setIsAddEmployeeModalVisible, refres
             >
               <Input prefix={<PhoneOutlined />} placeholder="+263 778 123456" />
             </Form.Item>
-          </Col>
+          </Col> */}
+          <Col span={12}>
+  <Form.Item
+    name="phoneNumber"
+    label="Phone Number"
+    rules={[
+      { required: true, message: 'Please enter phone number' }
+    ]}
+    // Transform the complex object into a simple string format
+    getValueProps={(value) => {
+      return { value }; // Pass through the value as-is for the component
+    }}
+    // When form collects values, transform from complex object to simple string
+    getValueFromEvent={(data) => {
+      if (!data) return undefined;
+      
+      // Format as international number: +[countryCode][areaCode][phoneNumber]
+      return `+${data.countryCode}${data.areaCode || ''}${data.phoneNumber || ''}`;
+    }}
+  >
+    <PhoneInput 
+      defaultCountry="zw" 
+      placeholder="778 123456"
+    />
+  </Form.Item>
+</Col>
         </Row>
 
         <Row gutter={16}>

@@ -43,6 +43,7 @@ import axios from 'axios';
 import propertyService from '../../services/propertiesService/propertiesService';
 import CreateNewPropertyModal from './CreatePropertyModal';
 import ChangeOwnerModal from './ChangeOwnerModal';
+import PropertyDetailsDrawer from './PropertyDetailsDrawer';
 // import CreatePropertyModal from './CreatePropertyModal';
 // import UpdatePropertyModal from './UpdatePropertyModal';
 // import ChangeOwnerModal from './ChangeOwnerModal';
@@ -63,6 +64,9 @@ export default function PropertyManagement() {
   const [isEditPropertyModalVisible, setIsEditPropertyModalVisible] = useState(false);
   const [isChangeOwnerModalVisible, setIsChangeOwnerModalVisible] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [selectedProvince, setSelectedProvince] = useState('');
+  const [selectedCity, setSelectedCity] = useState('');
+  const [availableCities, setAvailableCities] = useState([]);
   const [updatePropertyLoading, setUpdatePropertyLoading] = useState(false);
 
   useEffect(() => {
@@ -97,6 +101,18 @@ export default function PropertyManagement() {
     { value: 'industrial', label: 'Industrial' }
   ];
 
+  const zimbabweLocations = {
+    'Harare': ['Harare', 'Chitungwiza', 'Epworth'],
+    'Bulawayo': ['Bulawayo'],
+    'Manicaland': ['Mutare', 'Chipinge', 'Rusape', 'Birchenough Bridge'],
+    'Mashonaland Central': ['Bindura', 'Shamva', 'Mt Darwin', 'Concession'],
+    'Mashonaland East': ['Marondera', 'Ruwa', 'Mutoko', 'Chivhu'],
+    'Mashonaland West': ['Chinhoyi', 'Karoi', 'Chegutu', 'Kadoma', 'Norton'],
+    'Masvingo': ['Masvingo', 'Chiredzi', 'Gutu', 'Zaka'],
+    'Matabeleland North': ['Hwange', 'Victoria Falls', 'Lupane', 'Binga'],
+    'Matabeleland South': ['Gwanda', 'Beitbridge', 'Plumtree', 'Esigodini'],
+    'Midlands': ['Gweru', 'Kwekwe', 'Zvishavane', 'Shurugwi', 'Gokwe']
+  };
   const handleDeleteProperty = (id) => {
     propertyService
       .deleteProperty(id)
@@ -138,8 +154,13 @@ export default function PropertyManagement() {
   };
 
   const handleChangeOwner = (propertyId, newOwnerId) => {
+    console.log(propertyId)
+    const reqBody = {
+      userId: newOwnerId
+    }
+    console.log(reqBody)
     propertyService
-      .changePropertyOwner(propertyId, { newOwnerId })
+      .changePropertyOwner(propertyId, reqBody)
       .then((response) => {
         message.success('Property owner changed successfully');
         refreshState();
@@ -163,11 +184,34 @@ export default function PropertyManagement() {
     return typeMap[type] || { text: type, color: 'default' };
   };
 
+  useEffect(() => {
+    if (selectedProvince) {
+      setAvailableCities(zimbabweLocations[selectedProvince] || []);
+      setSelectedCity(''); // Reset city selection when province changes
+    } else {
+      setAvailableCities([]);
+      setSelectedCity('');
+    }
+  }, [selectedProvince]);
+
+  // Handle province selection
+  const handleProvinceChange = (value) => {
+    setSelectedProvince(value);
+  };
+
+  // Handle city selection
+  const handleCityChange = (value) => {
+    setSelectedCity(value);
+  };
+
+  // Advanced filtering with province and city
   const filteredData = propertiesData.filter(
     (item) =>
       item.propertyName.toLowerCase().includes(searchName.toLowerCase()) &&
       item.meterNumber.toLowerCase().includes(searchMeter.toLowerCase()) &&
-      (searchType === '' || item.propertyType === searchType)
+      (searchType === '' || item.propertyType === searchType) &&
+      (selectedProvince === '' || item.province === selectedProvince) &&
+      (selectedCity === '' || item.city === selectedCity)
   );
 
   const columns = [
@@ -238,9 +282,9 @@ export default function PropertyManagement() {
               }}
             />
           </Tooltip>
-          <Tooltip title="Edit Property">
+          {/* <Tooltip title="Edit Property">
             <EditOutlined onClick={() => prepareEditModal(record)} />
-          </Tooltip>
+          </Tooltip> */}
           <Tooltip title="Change Owner">
             <UserSwitchOutlined onClick={() => prepareChangeOwnerModal(record)} />
           </Tooltip>
@@ -265,6 +309,8 @@ export default function PropertyManagement() {
     setSearchName('');
     setSearchMeter('');
     setSearchType('');
+    setSelectedProvince('');
+    setSelectedCity('');
     message.info('Filters have been reset');
   };
 
@@ -327,6 +373,35 @@ export default function PropertyManagement() {
             style={{ width: 250 }}
           />
           <Select
+  style={{ width: 200 }}
+  placeholder="Select Province"
+  allowClear
+  onChange={handleProvinceChange}
+  value={selectedProvince || undefined}  // Change this line
+>
+  {Object.keys(zimbabweLocations).map(province => (
+    <Select.Option key={province} value={province}>
+      {province}
+    </Select.Option>
+  ))}
+</Select>
+
+<Select
+  style={{ width: 200 }}
+  placeholder="Select City"
+  allowClear
+  onChange={handleCityChange}
+  value={selectedCity || undefined}  // Change this line
+  disabled={!selectedProvince}
+>
+  {availableCities.map(city => (
+    <Select.Option key={city} value={city}>
+      {city}
+    </Select.Option>
+  ))}
+</Select>
+          
+          <Select
             placeholder="Filter by Type"
             allowClear
             style={{ width: 220 }}
@@ -373,255 +448,11 @@ export default function PropertyManagement() {
       </Drawer>
 
       {/* Property Details Drawer */}
-      <Drawer
-        title={
-          <Space>
-            <HomeOutlined style={{ fontSize: '18px', color: '#1890ff' }} />
-            <span style={{ fontSize: '18px', fontWeight: 'bold' }}>Property Details</span>
-          </Space>
-        }
-        placement="right"
-        width={620}
-        onClose={() => setIsDetailsDrawerVisible(false)}
-        open={isDetailsDrawerVisible}
-        headerStyle={{ borderBottom: '1px solid #f0f0f0' }}
-        bodyStyle={{ padding: '0' }}
-      >
-        {selectedProperty && (
-          <div>
-            {/* Header Banner */}
-            <div
-              style={{
-                background: 'linear-gradient(135deg, #1890ff 0%, #096dd9 100%)',
-                padding: '24px',
-                color: 'white',
-                borderRadius: '0 0 8px 8px'
-              }}
-            >
-              <Row align="middle" gutter={16}>
-                <Col>
-                  <div
-                    style={{
-                      backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                      borderRadius: '50%',
-                      padding: '12px',
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center'
-                    }}
-                  >
-                    <HomeOutlined style={{ fontSize: '24px' }} />
-                  </div>
-                </Col>
-                <Col flex="auto">
-                  <h2 style={{ color: 'white', margin: 0 }}>{selectedProperty.propertyName}</h2>
-                  <div style={{ marginTop: '8px' }}>
-                    <Tag color={formatPropertyType(selectedProperty.propertyType).color} style={{ borderRadius: '12px' }}>
-                      {formatPropertyType(selectedProperty.propertyType).text}
-                    </Tag>
-                    <Badge
-                      status={selectedProperty.isActive ? 'success' : 'error'}
-                      text={selectedProperty.isActive ? 'Active' : 'Inactive'}
-                      style={{ marginLeft: '8px', color: 'white' }}
-                    />
-                  </div>
-                </Col>
-              </Row>
-            </div>
-
-            {/* Content Sections */}
-            <div style={{ padding: '16px 24px' }}>
-              {/* Property Information Section */}
-              <div style={{ marginBottom: '24px' }}>
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    marginBottom: '16px',
-                    borderBottom: '1px solid #f0f0f0',
-                    paddingBottom: '8px'
-                  }}
-                >
-                  <InfoCircleOutlined style={{ marginRight: '8px', color: '#1890ff' }} />
-                  <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Property Information</span>
-                </div>
-
-                <Row gutter={[24, 16]}>
-                  <Col span={12}>
-                    <div style={{ background: '#f9f9f9', padding: '12px', borderRadius: '6px' }}>
-                      <div style={{ color: '#8c8c8c', fontSize: '12px' }}>Property ID</div>
-                      <div style={{ fontWeight: '500', marginTop: '4px' }}>{selectedProperty.id.slice(0, 8)}...</div>
-                    </div>
-                  </Col>
-                  <Col span={12}>
-                    <div style={{ background: '#f9f9f9', padding: '12px', borderRadius: '6px' }}>
-                      <div style={{ color: '#8c8c8c', fontSize: '12px' }}>Meter Number</div>
-                      <div style={{ fontWeight: '500', marginTop: '4px' }}>{selectedProperty.meterNumber}</div>
-                    </div>
-                  </Col>
-
-                  <Col span={24}>
-                    <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '8px' }}>
-                      <EnvironmentOutlined style={{ marginRight: '8px', marginTop: '4px', color: '#fa541c' }} />
-                      <div>
-                        <div style={{ color: '#8c8c8c', fontSize: '12px' }}>Address</div>
-                        <div style={{ fontWeight: '500' }}>{selectedProperty.address}</div>
-                      </div>
-                    </div>
-                  </Col>
-
-                  <Col span={8}>
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                      <span style={{ color: '#8c8c8c', fontSize: '12px' }}>City</span>
-                      <span>{selectedProperty.city}</span>
-                    </div>
-                  </Col>
-                  <Col span={8}>
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                      <span style={{ color: '#8c8c8c', fontSize: '12px' }}>Province</span>
-                      <span>{selectedProperty.province}</span>
-                    </div>
-                  </Col>
-                  <Col span={8}>
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                      <span style={{ color: '#8c8c8c', fontSize: '12px' }}>Postal Code</span>
-                      <span>{selectedProperty.postalCode}</span>
-                    </div>
-                  </Col>
-
-                  <Col span={24}>
-                    <div
-                      style={{
-                        marginTop: '8px',
-                        padding: '12px',
-                        borderRadius: '6px',
-                        background: '#f6ffed',
-                        border: '1px solid #b7eb8f'
-                      }}
-                    >
-                      <div style={{ color: '#52c41a', marginBottom: '4px', fontWeight: '500' }}>Location Coordinates</div>
-                      <div>
-                        Latitude: {selectedProperty.latitude} | Longitude: {selectedProperty.longitude}
-                      </div>
-                    </div>
-                  </Col>
-                </Row>
-              </div>
-
-              {/* Consumption & Billing Section */}
-              <div style={{ marginBottom: '24px' }}>
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    marginBottom: '16px',
-                    borderBottom: '1px solid #f0f0f0',
-                    paddingBottom: '8px'
-                  }}
-                >
-                  <ThunderboltOutlined style={{ marginRight: '8px', color: '#faad14' }} />
-                  <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Consumption & Billing</span>
-                </div>
-
-                <Row gutter={[24, 16]}>
-                  <Col span={12}>
-                    <Card bordered={false} style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.09)' }}>
-                      <Statistic
-                        title={<span style={{ fontSize: '14px' }}>Current Balance</span>}
-                        value={selectedProperty.currentBalance}
-                        precision={2}
-                        prefix={<DollarOutlined />}
-                        suffix="USD"
-                        valueStyle={{
-                          color: selectedProperty.currentBalance > 0 ? '#cf1322' : '#3f8600',
-                          fontSize: '20px'
-                        }}
-                      />
-                    </Card>
-                  </Col>
-                  <Col span={12}>
-                    <Card style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.09)' }}>
-                      <Statistic
-                        title={<span style={{ fontSize: '14px' }}>Total Consumption</span>}
-                        value={selectedProperty.totalConsumption}
-                        precision={2}
-                        prefix={<ThunderboltOutlined />}
-                        suffix="kWh"
-                        valueStyle={{ color: '#1890ff', fontSize: '20px' }}
-                      />
-                    </Card>
-                  </Col>
-
-                  <Col span={24}>
-                    <div style={{ display: 'flex', alignItems: 'center', marginTop: '8px' }}>
-                      <CalendarOutlined style={{ marginRight: '8px', color: '#722ed1' }} />
-                      <div>
-                        <span style={{ color: '#8c8c8c', fontSize: '12px', marginRight: '8px' }}>Last Token Purchase:</span>
-                        {selectedProperty.lastTokenPurchase ? (
-                          <Tag color="purple" style={{ marginLeft: '0' }}>
-                            {new Date(selectedProperty.lastTokenPurchase).toLocaleString()}
-                          </Tag>
-                        ) : (
-                          <Tag color="default">N/A</Tag>
-                        )}
-                      </div>
-                    </div>
-                  </Col>
-                </Row>
-              </div>
-
-              {/* Owner Information Section */}
-              <div>
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    marginBottom: '16px',
-                    borderBottom: '1px solid #f0f0f0',
-                    paddingBottom: '8px'
-                  }}
-                >
-                  <UserOutlined style={{ marginRight: '8px', color: '#13c2c2' }} />
-                  <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Owner Information</span>
-                </div>
-
-                <Card
-                  style={{
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.09)',
-                    borderRadius: '6px',
-                    background: 'linear-gradient(to right, #e6f7ff, #f9f9f9)'
-                  }}
-                >
-                  <Row gutter={[16, 16]} align="middle">
-                    <Col span={4}>
-                      <Avatar size={64} icon={<UserOutlined />} style={{ backgroundColor: '#13c2c2' }} />
-                    </Col>
-                    <Col span={20}>
-                      <h3 style={{ margin: '0 0 8px 0' }}>
-                        {selectedProperty.owner.firstName} {selectedProperty.owner.lastName}
-                      </h3>
-                      <Row gutter={16}>
-                        <Col span={12}>
-                          <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <MailOutlined style={{ marginRight: '8px', color: '#8c8c8c' }} />
-                            <span>{selectedProperty.owner.email}</span>
-                          </div>
-                        </Col>
-                        <Col span={12}>
-                          <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <PhoneOutlined style={{ marginRight: '8px', color: '#8c8c8c' }} />
-                            <span>{selectedProperty.owner.phoneNumber}</span>
-                          </div>
-                        </Col>
-                      </Row>
-                    </Col>
-                  </Row>
-                </Card>
-              </div>
-            </div>
-          </div>
-        )}
-      </Drawer>
+      <PropertyDetailsDrawer
+  isVisible={isDetailsDrawerVisible}
+  onClose={() => setIsDetailsDrawerVisible(false)}
+  selectedProperty={selectedProperty}
+/>
 
       {/* Edit Property Modal */}
       <Modal

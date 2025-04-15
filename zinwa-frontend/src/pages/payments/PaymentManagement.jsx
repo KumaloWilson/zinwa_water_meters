@@ -15,7 +15,8 @@ import {
   Badge,
   Statistic,
   Avatar,
-  message
+  message,
+  DatePicker
 } from 'antd';
 import {
   SearchOutlined,
@@ -38,6 +39,8 @@ import {
 } from '@ant-design/icons';
 import paymentService from '../../services/paymentService/paymentService';
 
+const { RangePicker } = DatePicker;
+
 export default function PaymentManagement() {
   // Payment data state
   const [paymentsData, setPaymentsData] = useState([]);
@@ -49,6 +52,7 @@ export default function PaymentManagement() {
   const [searchReference, setSearchReference] = useState('');
   const [searchProperty, setSearchProperty] = useState('');
   const [searchStatus, setSearchStatus] = useState('');
+  const [dateRange, setDateRange] = useState(null);
   const [isDetailsDrawerVisible, setIsDetailsDrawerVisible] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -108,12 +112,36 @@ export default function PaymentManagement() {
     return methodMap[method] || { text: method, color: 'default' };
   };
 
-  const filteredData = paymentsData.filter(
-    (item) =>
-      item?.referenceNumber?.toLowerCase().includes(searchReference.toLowerCase()) &&
-      item.property?.propertyName?.toLowerCase().includes(searchProperty.toLowerCase()) &&
-      (searchStatus === '' || item.status === searchStatus)
-  );
+  // Helper function to check if a date is within range
+  const isDateInRange = (dateStr, startDate, endDate) => {
+    if (!dateStr) return false;
+    
+    const date = new Date(dateStr);
+    return date >= startDate && date <= endDate;
+  };
+
+  const filteredData = paymentsData.filter((item) => {
+    // Check reference number
+    const referenceMatches = item?.referenceNumber?.toLowerCase().includes(searchReference.toLowerCase());
+    
+    // Check property name
+    const propertyMatches = item.property?.propertyName?.toLowerCase().includes(searchProperty.toLowerCase());
+    
+    // Check status
+    const statusMatches = searchStatus === '' || item.status === searchStatus;
+    
+    // Check date range
+    let dateMatches = true;
+    if (dateRange && dateRange[0] && dateRange[1]) {
+      // Convert Moment objects to JavaScript Date objects with time set to start and end of day
+      const startDate = dateRange[0].startOf('day').toDate();
+      const endDate = dateRange[1].endOf('day').toDate();
+      
+      dateMatches = isDateInRange(item.createdAt, startDate, endDate);
+    }
+    
+    return referenceMatches && propertyMatches && statusMatches && dateMatches;
+  });
 
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
@@ -194,7 +222,17 @@ export default function PaymentManagement() {
     setSearchReference('');
     setSearchProperty('');
     setSearchStatus('');
+    setDateRange(null);
     message.info('Filters have been reset');
+  };
+
+  // Debug function to help trace the date filter issue
+  const handleDateRangeChange = (dates) => {
+    setDateRange(dates);
+    console.log("Date range set to:", dates);
+    if (dates && dates.length === 2) {
+      console.log("Start date:", dates[0].format(), "End date:", dates[1].format());
+    }
   };
 
   return (
@@ -265,6 +303,12 @@ export default function PaymentManagement() {
             value={searchStatus || undefined}
             options={paymentStatusOptions}
           />
+          <RangePicker
+            placeholder={['Start Date', 'End Date']}
+            value={dateRange}
+            onChange={handleDateRangeChange}
+            style={{ width: 280 }}
+          />
 
           <Button icon={<ReloadOutlined />} onClick={resetFilters}>
             Reset Filters
@@ -273,6 +317,15 @@ export default function PaymentManagement() {
           <Button type="primary" icon={<ReloadOutlined />} onClick={refreshState}>
             Refresh
           </Button>
+        </Space>
+
+        <Space style={{ marginLeft: 20, marginBottom: 20 }}>
+          {filteredData.length} results found
+          {dateRange && dateRange[0] && dateRange[1] && (
+            <Tag color="blue">
+              <CalendarOutlined /> Filtered by dates: {dateRange[0].format('MMM Do')} - {dateRange[1].format('MMM Do')}
+            </Tag>
+          )}
         </Space>
 
         <Divider />

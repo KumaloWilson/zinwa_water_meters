@@ -36,6 +36,7 @@
     "@react-google-maps/api": "^2.20.6",
     "@vitejs/plugin-react": "4.3.4",
     "antd": "^5.24.6",
+    "antd-phone-input": "^0.3.13",
     "axios": "^1.8.4",
     "formik": "2.4.6",
     "framer-motion": "^10.16.1",

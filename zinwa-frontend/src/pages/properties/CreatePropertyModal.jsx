@@ -1,10 +1,11 @@
-import { HomeOutlined, EnvironmentOutlined, NumberOutlined, CompassOutlined } from '@ant-design/icons';
+import { HomeOutlined, EnvironmentOutlined, NumberOutlined, CompassOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Col, Form, Input, Row, Select, message, Spin, Divider } from 'antd';
 import React, { useState, useEffect } from 'react';
 
 // Map imports - properly using ES6 import syntax
 import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 import propertyService from '../../services/propertiesService/propertiesService';
+import userService from '../../services/userService/userService';
 
 export default function CreateNewPropertyModal({ setIsAddPropertyModalVisible, refreshState }) {
   const [addPropertyForm] = Form.useForm();
@@ -15,6 +16,8 @@ export default function CreateNewPropertyModal({ setIsAddPropertyModalVisible, r
     lng: 31.0335
   });
   const [markerPosition, setMarkerPosition] = useState(null);
+  const [users, setUsers] = useState([]);
+  const [userLoading, setUserLoading] = useState(false);
 
   // Property types for the dropdown
   const propertyTypes = [
@@ -31,6 +34,25 @@ export default function CreateNewPropertyModal({ setIsAddPropertyModalVisible, r
     height: '400px',
     borderRadius: '8px',
     marginBottom: '16px'
+  };
+
+  // Fetch users when component mounts
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  // Fetch all users
+  const fetchUsers = async () => {
+    setUserLoading(true);
+    try {
+      const data = await userService.getUsers();
+      setUsers(data?.users || []);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      message.error('Failed to load users');
+    } finally {
+      setUserLoading(false);
+    }
   };
 
   // Try to get user's current location when component mounts
@@ -73,7 +95,7 @@ export default function CreateNewPropertyModal({ setIsAddPropertyModalVisible, r
     setMarkerPosition(clickedPosition);
     updateLatLngFields(clickedPosition);
   };
-
+ 
   // Update marker when lat/lng fields change manually
   const handleCoordinateChange = () => {
     const latitude = parseFloat(addPropertyForm.getFieldValue('latitude'));
@@ -130,17 +152,32 @@ export default function CreateNewPropertyModal({ setIsAddPropertyModalVisible, r
         layout="vertical"
         onFinish={handleSubmit}
       >
-        {/* <Row gutter={16}>
+        <Row gutter={16}>
           <Col span={24}>
             <Form.Item
               name="userId"
-              label="User ID"
-              rules={[{ required: true, message: 'Please enter user ID' }]}
+              label="Property Owner"
+              rules={[{ required: true, message: 'Please select a property owner' }]}
             >
-              <Input />
+              <Select
+                placeholder="Select a property owner"
+                loading={userLoading}
+                showSearch
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
+                prefix={<UserOutlined />}
+              >
+                {users.map(user => (
+                  <Select.Option key={user.id} value={user.id}>
+                    {`${user.firstName} ${user.lastName}`}
+                  </Select.Option>
+                ))}
+              </Select>
             </Form.Item>
           </Col>
-        </Row> */}
+        </Row>
 
         <Row gutter={16}>
           <Col span={12}>
