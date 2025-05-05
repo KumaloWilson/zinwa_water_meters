@@ -41,6 +41,7 @@ import {
 // import CreateReadingModal from './CreateReadingModal';
 // import UpdateReadingModal from './UpdateReadingModal';
 import meterReadingService from '../../services/meterReadingsService/meterReadingsService';
+import propertyService from '../../services/propertiesService/propertiesService';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -70,6 +71,8 @@ export default function MeterReadingsManagement() {
     fetchReadings();
     fetchPropertyOptions();
   }, [currentPage]);
+console.log(propertyOptions)
+
 
   const fetchReadings = () => {
     setLoading(true);
@@ -89,21 +92,23 @@ export default function MeterReadingsManagement() {
   };
 
   const fetchPropertyOptions = () => {
-    // Normally you'd fetch this from an API, but for now we'll extract unique properties from readings
-    const uniqueProperties = [];
-    const propertyMap = new Map();
-    
-    readingsData.forEach(reading => {
-      if (reading.property && !propertyMap.has(reading.property.id)) {
-        propertyMap.set(reading.property.id, true);
-        uniqueProperties.push({
-          value: reading.property.id,
-          label: reading.property.propertyName
-        });
-      }
-    });
-    
-    setPropertyOptions(uniqueProperties);
+    setLoading(true);
+    propertyService
+      .getProperties() 
+      .then((data) => {
+
+        const propertyOptions = data?.properties?.map(property => ({
+          value: property.id,
+          label: property.propertyName
+        }));
+        setPropertyOptions(propertyOptions);
+        setLoading(false);
+      })
+      .catch((error) => {
+        message.error('Error fetching property options');
+        console.log(error);
+        setLoading(false);
+      });
   };
 
   const refreshState = () => {

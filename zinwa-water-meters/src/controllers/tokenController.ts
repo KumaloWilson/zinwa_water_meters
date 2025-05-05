@@ -136,7 +136,7 @@ export const purchaseToken = async (req: Request, res: Response) => {
     })
   } catch (error) {
     logger.error("Purchase token error:", error)
-    res.status(500).json({ message: "Error purchasing token" })
+    res.status(500).json({ message: error })
   }
 }
 

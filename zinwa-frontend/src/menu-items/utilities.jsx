@@ -79,14 +79,14 @@ const utilities = {
       icon: icons.FontSizeOutlined,
       breadcrumbs: false
     },
-    {
-      id: 'util-notifications',
-      title: 'Notifications',
-      type: 'item',
-      url: '/notifications',
-      icon: icons.AlertOutlined,
-      breadcrumbs: false
-    },
+    // {
+    //   id: 'util-notifications',
+    //   title: 'Notifications',
+    //   type: 'item',
+    //   url: '/notifications',
+    //   icon: icons.AlertOutlined,
+    //   breadcrumbs: false
+    // },
     {
       id: 'util-meter-readings',
       title: 'Meter Readings',
