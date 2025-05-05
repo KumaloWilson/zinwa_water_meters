@@ -43,7 +43,7 @@ class TokenService extends GetxService {
   }
 
   // Initiate token purchase
-  Future<TokenPurchaseResponse> purchaseToken({required String propertyId, required double amount}) async {
+  Future<TokenPurchaseResponse> purchaseToken({required String propertyId, required num amount}) async {
     try {
       final response = await _apiService.post('/tokens/purchase', data: {
         'propertyId': propertyId,

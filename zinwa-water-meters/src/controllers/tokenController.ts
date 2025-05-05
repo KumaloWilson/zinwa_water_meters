@@ -134,13 +134,14 @@ export const purchaseToken = async (req: Request, res: Response) => {
       pollUrl: paynowResponse.pollUrl || "",
       units,
     })
+
   } catch (error) {
     logger.error("Purchase token error:", error)
-    res.status(500).json({ message: "Error purchasing token" })
+    res.status(500).json({ message: error })
   }
 }
 
-// Complete token purchase (callback from payment gateway)
+//// Complete token purchase (callback from payment gateway)
 export const completeTokenPurchase = async (req: Request, res: Response) => {
   try {
     const { reference, status, pollurl } = req.body

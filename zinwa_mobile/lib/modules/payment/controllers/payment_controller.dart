@@ -122,7 +122,7 @@ class PaymentController extends GetxController {
 
         // Process payment
         final result = await _tokenService.purchaseToken(
-            amount: double.parse(amountController.text),
+            amount: num.parse(amountController.text),
             propertyId: propertyId
         );
 
