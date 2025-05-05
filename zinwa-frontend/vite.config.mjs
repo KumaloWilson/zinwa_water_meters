@@ -4,14 +4,11 @@ import jsconfigPaths from 'vite-jsconfig-paths';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
-  const API_URL = `${env.VITE_APP_BASE_NAME}`;
   const PORT = 3000;
 
   return {
     server: {
-      // this ensures that the browser opens upon server start
       open: true,
-      // this sets a default port to 3000
       port: PORT,
       host: true
     },
@@ -23,23 +20,9 @@ export default defineConfig(({ mode }) => {
       global: 'window'
     },
     resolve: {
-      alias: [
-        // { find: '', replacement: path.resolve(__dirname, 'src') },
-        // {
-        //   find: /^~(.+)/,
-        //   replacement: path.join(process.cwd(), 'node_modules/$1')
-        // },
-        // {
-        //   find: /^src(.+)/,
-        //   replacement: path.join(process.cwd(), 'src/$1')
-        // }
-        // {
-        //   find: 'assets',
-        //   replacement: path.join(process.cwd(), 'src/assets')
-        // },
-      ]
+      alias: []
     },
-    base: API_URL,
+    base: '/', // important: serve from root for Vercel
     plugins: [react(), jsconfigPaths()]
   };
 });
