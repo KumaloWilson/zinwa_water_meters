@@ -59,7 +59,7 @@ export default function UserManagement() {
 
   // Enhanced staff data with more fields
   const [staffData, setStaffData] = useState([]);
-
+console.log(staffData)
   // State for filtering and modals
   const [searchName, setSearchName] = useState('');
   const [searchId, setSearchId] = useState('');
@@ -83,7 +83,7 @@ const [userPaymentsLoading, setUserPaymentsLoading] = useState(false);
 const [userPayments, setUserPayments] = useState([]);
 const [userTokensLoading, setUserTokensLoading] = useState(false);
 const [userTokens, setUserTokens] = useState([]);
- console.log(userTokens)
+//  console.log(userTokens)
 // Function to fetch all user data when clicking view details
 const fetchUserDetails = (userId) => {
   // First set the selected user from staffData
@@ -192,12 +192,21 @@ const fetchUserDetails = (userId) => {
 
   const handleEditUser = (userId, values) => {
     setUpdateUserLoading(true);
+    
+    // Handle phone number formatting if needed
     if (values.phoneNumber && typeof values.phoneNumber === 'object') {
       const phoneData = values.phoneNumber;
       values.phoneNumber = `+${phoneData.countryCode}${phoneData.areaCode || ''}${phoneData.phoneNumber || ''}`;
     }
+    
+    // Make sure isVerified is explicitly included as a boolean
+    if (values.isVerified !== undefined) {
+      // No conversion needed as Switch component already returns boolean
+      console.log('Updating isVerified status to:', values.isVerified);
+    }
+    
     userService
-      .updateUser(userId, values) // Make sure to pass the values to your API
+      .updateUser(userId, values) // This will include the isVerified value
       .then((response) => {
         setUpdateUserLoading(false);
         console.log('response from api', response.data);
@@ -213,14 +222,14 @@ const fetchUserDetails = (userId) => {
   };
   // Table columns configuration
 
-  console.log(staffData);
+  // console.log(staffData);
 
   // Updated filter logic to include role filtering
   const filteredData = staffData?.users?.filter(
     (item) => 
-      item.firstName.toLowerCase()?.includes(searchName?.toLowerCase()) && 
+      item.firstName?.toLowerCase()?.includes(searchName?.toLowerCase()) && 
       item.id.toLowerCase()?.includes(searchId?.toLowerCase()) &&
-      (searchRole === '' || (item.role && item.role.toLowerCase()?.includes(searchRole.toLowerCase())))
+      (searchRole === '' || (item?.role && item?.role?.toLowerCase()?.includes(searchRole?.toLowerCase())))
   );
 
   // Get unique roles for the dropdown
