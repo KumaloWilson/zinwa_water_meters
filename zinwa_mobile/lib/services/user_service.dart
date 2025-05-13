@@ -23,7 +23,7 @@ class UserService extends GetxService {
     try {
       final response = await _apiService.put('/users/$uid', data: userData);
 
-      return User.fromJson(response.data);
+      return User.fromJson(response.data['user']);
     } catch (e) {
       DevLogs.logError(e.toString());
       rethrow;
