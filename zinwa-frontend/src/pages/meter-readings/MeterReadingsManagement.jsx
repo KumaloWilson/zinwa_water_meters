@@ -42,6 +42,8 @@ import {
 // import UpdateReadingModal from './UpdateReadingModal';
 import meterReadingService from '../../services/meterReadingsService/meterReadingsService';
 import propertyService from '../../services/propertiesService/propertiesService';
+import CreateReadingModal from './CreateReadingModal';
+import UpdateReadingModal from './UpdateReadingModal';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -593,11 +595,11 @@ console.log(propertyOptions)
 
       {/* Create & Edit Modals */}
       <Modal title="Add New Meter Reading" open={isCreateModalVisible} onCancel={() => setIsCreateModalVisible(false)} footer={null}>
-        {/* <CreateReadingModal refreshState={refreshState} setIsCreateModalVisible={setIsCreateModalVisible} /> */}
+        <CreateReadingModal refreshState={refreshState} setIsCreateModalVisible={setIsCreateModalVisible} />
       </Modal>
 
       <Modal title="Edit Meter Reading" open={isEditModalVisible} onCancel={() => setIsEditModalVisible(false)} footer={null}>
-        {/* <UpdateReadingModal refreshState={refreshState} setIsEditModalVisible={setIsEditModalVisible} selectedReading={selectedReading} readingId={selectedReading?.id} /> */}
+        <UpdateReadingModal refreshState={refreshState} setIsEditModalVisible={setIsEditModalVisible} selectedReading={selectedReading} readingId={selectedReading?.id} />
       </Modal>
     </div>
   );

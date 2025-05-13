@@ -102,7 +102,7 @@ export default function PropertyManagement() {
   ];
 
   const zimbabweLocations = {
-    'Harare': ['Harare', 'Chitungwiza', 'Epworth'],
+    'Harare': ['Harare'],
     'Bulawayo': ['Bulawayo'],
     'Manicaland': ['Mutare', 'Chipinge', 'Rusape', 'Birchenough Bridge'],
     'Mashonaland Central': ['Bindura', 'Shamva', 'Mt Darwin', 'Concession'],

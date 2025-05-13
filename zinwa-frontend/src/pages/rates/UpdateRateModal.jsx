@@ -2,6 +2,7 @@ import { DollarOutlined, CalendarOutlined, FileTextOutlined } from '@ant-design/
 import { Button, Col, Form, Input, Row, DatePicker, Switch, InputNumber, message } from 'antd';
 import React, { useState, useEffect } from 'react';
 import rateService from '../../services/rateService/rateService';
+import moment from 'moment';
 
 export default function UpdateRateModal({setIsEditDrawerVisible, refreshState, selectedRate , rateID}) {
   const [rateForm] = Form.useForm();
