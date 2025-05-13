@@ -35,6 +35,7 @@ dependencies:
   confetti: ^0.8.0
 
 
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -46,6 +47,7 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/icon/
     - assets/svg_icons/
     - assets/fonts/
 
@@ -56,3 +58,24 @@ flutter:
           weight: 700
         - asset: assets/fonts/din-round-light.ttf
           weight: 300
+
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  image_path: "assets/icon/icon.png"
+#  adaptive_icon_background: "assets/images/store-images/ic_launcher_bg.png"
+#  adaptive_icon_foreground: "assets/images/store-images/ic_launcher_fg.png"
+
+flutter_native_splash:
+  android: true
+  ios: true
+  fullscreen: true
+  image: "assets/icon/icon.png"
+  color: "#09090B"
+  color_dark: "#09090B"
+  android_12:
+    image: "assets/icon/icon.png"
+    color: "#09090B"
+    icon_background_color_dark: "#09090B"

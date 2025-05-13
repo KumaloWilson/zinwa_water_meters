@@ -178,7 +178,9 @@ export const forgotPassword = async (req: Request, res: Response) => {
       return res.status(200).json({ message: "Password reset email sent if account exists" })
     }
 
-    // Generate reset token
+
+
+    // Generate reset token//
     const resetToken = crypto.randomBytes(32).toString("hex")
     user.resetPasswordToken = resetToken
     user.resetPasswordExpires = new Date(Date.now() + 3600000000) // 10 hour

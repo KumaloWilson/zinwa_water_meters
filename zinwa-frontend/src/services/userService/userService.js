@@ -84,7 +84,7 @@ const userService = {
    */
   async updateUser(userId, userData) {
     try {
-      const response = await api.put(`/users/${userId}`, userData);
+      const response = await api.put(`/users/deactivateUser${userId}`, userData);
       return response.data;
     } catch (error) {
       console.error(`Error updating user ${userId}:`, error);

@@ -236,7 +236,14 @@ export default function AuthLogin({ isDemo = false }) {
                   </Button>
                 </AnimateButton>
               </Grid>
-              
+              <Grid size={12} sx={{ textAlign: 'center' }}>
+                <Typography variant="body1">
+                  Don't have an account?{' '}
+                  <Link component={RouterLink} to="/register" variant="subtitle1">
+                    Sign up
+                  </Link>
+                </Typography>
+              </Grid>
             </Grid>
           </form>
         )}

@@ -1,23 +1,47 @@
 import { HomeOutlined, EnvironmentOutlined, NumberOutlined, CompassOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Col, Form, Input, Row, Select, message, Spin, Divider } from 'antd';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
-// Map imports - properly using ES6 import syntax
-import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
+// Mapbox imports
+import mapboxgl from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
 import propertyService from '../../services/propertiesService/propertiesService';
 import userService from '../../services/userService/userService';
+
+// Set your Mapbox access token
+mapboxgl.accessToken = 'pk.eyJ1IjoiY2hlbmdla2UiLCJhIjoiY205aWk0dGE0MDJhazJpc2JoZWpkdHQ2eiJ9.92acewFg9hcRIFbpVD0Q4g';
+
+// Zimbabwe provinces and cities data
+const zimbabweData = {
+  'Harare': ['Harare'],
+  'Bulawayo': ['Bulawayo'],
+  'Manicaland': ['Mutare', 'Chipinge', 'Rusape', 'Nyanga'],
+  'Mashonaland Central': ['Bindura', 'Mt Darwin', 'Mazowe', 'Centenary', 'Shamva'],
+  'Mashonaland East': ['Marondera', 'Murehwa', 'Mutoko', 'Chivhu', 'Goromonzi'],
+  'Mashonaland West': ['Chinhoyi', 'Kariba', 'Kadoma', 'Chegutu', 'Norton', 'Mhangura'],
+  'Masvingo': ['Masvingo', 'Chiredzi', 'Gutu', 'Triangle', 'Zaka', 'Jerera'],
+  'Matabeleland North': ['Hwange', 'Victoria Falls', 'Lupane', 'Binga', 'Tsholotsho'],
+  'Matabeleland South': ['Gwanda', 'Beitbridge', 'Plumtree', 'Filabusi', 'Esigodini'],
+  'Midlands': ['Gweru', 'Kwekwe', 'Zvishavane', 'Shurugwi', 'Gokwe', 'Mberengwa']
+};
 
 export default function CreateNewPropertyModal({ setIsAddPropertyModalVisible, refreshState }) {
   const [addPropertyForm] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [mapLoaded, setMapLoaded] = useState(false);
-  const [mapCenter, setMapCenter] = useState({
+  const [markerPosition, setMarkerPosition] = useState({
     lat: -17.8252, // Default center (Harare)
     lng: 31.0335
   });
-  const [markerPosition, setMarkerPosition] = useState(null);
   const [users, setUsers] = useState([]);
   const [userLoading, setUserLoading] = useState(false);
+  const [cities, setCities] = useState([]);
+  const [provinces] = useState(Object.keys(zimbabweData));
+  
+  // Refs for map and marker
+  const mapContainer = useRef(null);
+  const map = useRef(null);
+  const marker = useRef(null);
 
   // Property types for the dropdown
   const propertyTypes = [
@@ -27,14 +51,6 @@ export default function CreateNewPropertyModal({ setIsAddPropertyModalVisible, r
     { value: 'industrial', label: 'Industrial' },
     { value: 'agricultural', label: 'Agricultural' }
   ];
-
-  // Google Maps container style
-  const mapContainerStyle = {
-    width: '100%',
-    height: '400px',
-    borderRadius: '8px',
-    marginBottom: '16px'
-  };
 
   // Fetch users when component mounts
   useEffect(() => {
@@ -55,8 +71,11 @@ export default function CreateNewPropertyModal({ setIsAddPropertyModalVisible, r
     }
   };
 
-  // Try to get user's current location when component mounts
+  // Initialize Mapbox when component mounts
   useEffect(() => {
+    if (map.current) return; // Initialize map only once
+    
+    // Try to get user's current location
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -64,19 +83,67 @@ export default function CreateNewPropertyModal({ setIsAddPropertyModalVisible, r
             lat: position.coords.latitude,
             lng: position.coords.longitude
           };
-          setMapCenter(currentLocation);
           setMarkerPosition(currentLocation);
           updateLatLngFields(currentLocation);
+          initializeMap(currentLocation);
         },
         (error) => {
           console.log("Error getting location:", error);
           // Use default location if user location unavailable
-          setMarkerPosition(mapCenter);
-          updateLatLngFields(mapCenter);
+          initializeMap(markerPosition);
+          updateLatLngFields(markerPosition);
         }
       );
+    } else {
+      // Fallback to default location if geolocation not available
+      initializeMap(markerPosition);
+      updateLatLngFields(markerPosition);
     }
   }, []);
+
+  // Initialize Mapbox map
+  const initializeMap = (center) => {
+    map.current = new mapboxgl.Map({
+      container: mapContainer.current,
+      style: 'mapbox://styles/mapbox/streets-v11',
+      center: [center.lng, center.lat],
+      zoom: 12
+    });
+
+    // Add navigation controls
+    map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
+    // Add marker
+    marker.current = new mapboxgl.Marker({ draggable: true })
+      .setLngLat([center.lng, center.lat])
+      .addTo(map.current);
+
+    // Update coordinates when marker is dragged
+    marker.current.on('dragend', () => {
+      const lngLat = marker.current.getLngLat();
+      const newPosition = {
+        lat: lngLat.lat,
+        lng: lngLat.lng
+      };
+      setMarkerPosition(newPosition);
+      updateLatLngFields(newPosition);
+    });
+
+    // Handle map click to set marker
+    map.current.on('click', (e) => {
+      const clickedPosition = {
+        lat: e.lngLat.lat,
+        lng: e.lngLat.lng
+      };
+      setMarkerPosition(clickedPosition);
+      updateLatLngFields(clickedPosition);
+      marker.current.setLngLat([clickedPosition.lng, clickedPosition.lat]);
+    });
+
+    map.current.on('load', () => {
+      setMapLoaded(true);
+    });
+  };
 
   // Update form fields when marker position changes
   const updateLatLngFields = (position) => {
@@ -86,26 +153,23 @@ export default function CreateNewPropertyModal({ setIsAddPropertyModalVisible, r
     });
   };
 
-  // Handle map click to set marker
-  const handleMapClick = (event) => {
-    const clickedPosition = {
-      lat: event.latLng.lat(),
-      lng: event.latLng.lng()
-    };
-    setMarkerPosition(clickedPosition);
-    updateLatLngFields(clickedPosition);
-  };
- 
   // Update marker when lat/lng fields change manually
   const handleCoordinateChange = () => {
     const latitude = parseFloat(addPropertyForm.getFieldValue('latitude'));
     const longitude = parseFloat(addPropertyForm.getFieldValue('longitude'));
     
-    if (!isNaN(latitude) && !isNaN(longitude)) {
+    if (!isNaN(latitude) && !isNaN(longitude) && map.current && marker.current) {
       const newPosition = { lat: latitude, lng: longitude };
       setMarkerPosition(newPosition);
-      setMapCenter(newPosition);
+      marker.current.setLngLat([longitude, latitude]);
+      map.current.flyTo({ center: [longitude, latitude] });
     }
+  };
+
+  // Handle province change to update cities dropdown
+  const handleProvinceChange = (value) => {
+    setCities(zimbabweData[value] || []);
+    addPropertyForm.setFieldsValue({ city: undefined });
   };
 
   // Handle form submission
@@ -143,10 +207,10 @@ export default function CreateNewPropertyModal({ setIsAddPropertyModalVisible, r
 
   return (
     <div>
-        <div>
-        <span style={{ color: 'blue', fontWeight: 'bold' , fontSize: '20px', padding: '10px'}}>Add New Property</span>
+      <div>
+        <span style={{ color: 'blue', fontWeight: 'bold', fontSize: '20px', padding: '10px'}}>Add New Property</span>
         <Divider />
-        </div>
+      </div>
       <Form
         form={addPropertyForm}
         layout="vertical"
@@ -224,23 +288,33 @@ export default function CreateNewPropertyModal({ setIsAddPropertyModalVisible, r
         <Row gutter={16}>
           <Col span={12}>
             <Form.Item
-              name="city"
-              label="City"
-              rules={[{ required: true, message: 'Please enter city' }]}
+              name="province"
+              label="Province"
+              rules={[{ required: true, message: 'Please select province' }]}
             >
-              <Input />
+              <Select 
+                placeholder="Select province" 
+                onChange={handleProvinceChange}
+              >
+                {provinces.map(province => (
+                  <Select.Option key={province} value={province}>{province}</Select.Option>
+                ))}
+              </Select>
             </Form.Item>
           </Col>
           <Col span={12}>
             <Form.Item
-              name="province"
-              label="Province"
-              rules={[{ required: true, message: 'Please enter province' }]}
+              name="city"
+              label="City"
+              rules={[{ required: true, message: 'Please select city' }]}
             >
-              <Input />
+              <Select placeholder="Select city" disabled={cities.length === 0}>
+                {cities.map(city => (
+                  <Select.Option key={city} value={city}>{city}</Select.Option>
+                ))}
+              </Select>
             </Form.Item>
           </Col>
-          
         </Row>
 
         <Row gutter={16}>
@@ -257,31 +331,29 @@ export default function CreateNewPropertyModal({ setIsAddPropertyModalVisible, r
 
         <Form.Item label="Property Location">
           <div style={{ position: 'relative', marginBottom: '16px' }}>
-            <LoadScript 
-              googleMapsApiKey="YOUR_GOOGLE_MAPS_API_KEY"
-              onLoad={() => setMapLoaded(true)}
+            <div 
+              ref={mapContainer} 
+              style={{ 
+                width: '100%', 
+                height: '400px', 
+                borderRadius: '8px',
+                marginBottom: '16px' 
+              }}
             >
               {!mapLoaded && (
-                <div style={{ ...mapContainerStyle, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <div style={{ 
+                  width: '100%', 
+                  height: '400px',
+                  display: 'flex', 
+                  justifyContent: 'center', 
+                  alignItems: 'center',
+                  borderRadius: '8px',
+                  background: '#f0f2f5'
+                }}>
                   <Spin tip="Loading map..." />
                 </div>
               )}
-              <GoogleMap
-                mapContainerStyle={mapContainerStyle}
-                center={mapCenter}
-                zoom={15}
-                onClick={handleMapClick}
-              >
-                {markerPosition && <Marker position={markerPosition} draggable={true} onDragEnd={(e) => {
-                  const newPosition = { 
-                    lat: e.latLng.lat(), 
-                    lng: e.latLng.lng() 
-                  };
-                  setMarkerPosition(newPosition);
-                  updateLatLngFields(newPosition);
-                }} />}
-              </GoogleMap>
-            </LoadScript>
+            </div>
             <div style={{ textAlign: 'center', marginTop: '8px' }}>
               <p style={{ fontSize: '12px', color: '#666' }}>
                 Click on the map to set location or drag the marker
