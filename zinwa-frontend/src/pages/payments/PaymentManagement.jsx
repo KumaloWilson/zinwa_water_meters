@@ -164,7 +164,7 @@ export default function PaymentManagement() {
     {
       title: 'User',
       key: 'user',
-      render: (_, record) => `${record.user.firstName} ${record.user.lastName}`
+      render: (_, record) => `${record.user?.firstName} ${record.user?.lastName}`
     },
     {
       title: 'Amount',
