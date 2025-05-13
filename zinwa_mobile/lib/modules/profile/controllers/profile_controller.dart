@@ -6,6 +6,7 @@ import 'package:zinwa_mobile_app/routes/app_pages.dart';
 import 'package:zinwa_mobile_app/routes/app_routes.dart';
 import 'package:zinwa_mobile_app/services/auth_service.dart';
 import 'package:zinwa_mobile_app/services/user_service.dart';
+import 'package:zinwa_mobile_app/utils/logs.dart';
 import 'package:zinwa_mobile_app/utils/ui_helpers.dart';
 
 class ProfileController extends GetxController {
@@ -106,9 +107,11 @@ class ProfileController extends GetxController {
           'lastName': lastNameController.text,
           'phone': phoneController.text,
         };
-        
+
+        DevLogs.logInfo(userData.toString());
+        DevLogs.logInfo(user.value!.id);
         // Update user profile
-        final updatedUser = await _userService.updateUserProfile(userData);
+        final updatedUser = await _userService.updateUserProfile(uid: user.value!.id, userData: userData);
         user.value = updatedUser;
         
         // Exit edit mode

@@ -101,16 +101,17 @@ export const updateUser = async (req: Request, res: Response) => {
     await user.save()
 
     res.status(200).json({
-      message: "User updated successfully",
       user: {
-        id: user.id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        phoneNumber: user.phoneNumber,
-        address: user.address,
-        nationalId: user.nationalId,
-        role: user.role,
+        id: req.user.id,
+        firstName: req.user.firstName,
+        lastName: req.user.lastName,
+        email: req.user.email,
+        phoneNumber: req.user.phoneNumber,
+        address: req.user.address,
+        nationalId: req.user.nationalId,
+        role: req.user.role,
+        isVerified: req.user.isVerified,
+        lastLogin: req.user.lastLogin,
       },
     })
   } catch (error) {
