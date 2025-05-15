@@ -8,8 +8,6 @@ import '../controllers/auth_controller.dart';
 class RegisterView extends GetView<AuthController> {
   RegisterView({super.key});
 
-  final _formKey = GlobalKey<FormState>();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,7 +17,7 @@ class RegisterView extends GetView<AuthController> {
             _buildRegisterForm(),
             if (controller.isLoading.value)
               Container(
-                color: Colors.black.withValues(alpha: .3),
+                color: Colors.black.withOpacity(0.3), // Fixed .withValues(alpha: .3) to .withOpacity(0.3)
                 child: const Center(
                   child: CircularProgressIndicator(),
                 ),
@@ -35,14 +33,14 @@ class RegisterView extends GetView<AuthController> {
       child: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Form(
-          key: _formKey,
+          key: controller.registerFormKey, // Use the controller's form key instead of local _formKey
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 40),
               Center(
                 child: Image.asset(
-                  'assets/images/logo.png',
+                  'assets/icon/icon.png',
                   height: 100,
                   width: 100,
                 ),
@@ -92,7 +90,7 @@ class RegisterView extends GetView<AuthController> {
               ),
               const SizedBox(height: 16),
               CustomTextField(
-                controller: controller.emailController,
+                controller: controller.registerEmailController, // Changed from emailController to registerEmailController
                 labelText: 'Email',
                 prefixIcon: Icons.email_outlined,
                 keyboardType: TextInputType.emailAddress,
@@ -121,18 +119,18 @@ class RegisterView extends GetView<AuthController> {
               ),
               const SizedBox(height: 16),
               Obx(() => CustomTextField(
-                controller: controller.passwordController,
+                controller: controller.registerPasswordController, // Changed from passwordController to registerPasswordController
                 labelText: 'Password',
                 prefixIcon: Icons.lock_outline,
-                obscureText: !controller.obscureRegisterPassword.value,
+                obscureText: !controller.obscureRegisterPassword.value, // Changed from obscurePassword to obscureRegisterPassword
                 suffixIcon: IconButton(
                   icon: Icon(
-                    controller.obscureRegisterPassword.value
+                    controller.obscureRegisterPassword.value // Changed from obscurePassword to obscureRegisterPassword
                         ? Icons.visibility_off
                         : Icons.visibility,
                     color: Colors.grey,
                   ),
-                  onPressed: () => controller.togglePasswordVisibility(),
+                  onPressed: () => controller.toggleRegisterPasswordVisibility(), // Changed from togglePasswordVisibility to toggleRegisterPasswordVisibility
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -163,7 +161,7 @@ class RegisterView extends GetView<AuthController> {
                   if (value == null || value.isEmpty) {
                     return 'Please confirm your password';
                   }
-                  if (value != controller.passwordController.text) {
+                  if (value != controller.registerPasswordController.text) { // Changed from passwordController to registerPasswordController
                     return 'Passwords do not match';
                   }
                   return null;
@@ -173,9 +171,7 @@ class RegisterView extends GetView<AuthController> {
               CustomButton(
                 text: 'Register',
                 onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    controller.register();
-                  }
+                  controller.register();
                 },
               ),
               const SizedBox(height: 16),
@@ -208,4 +204,3 @@ class RegisterView extends GetView<AuthController> {
     );
   }
 }
-
