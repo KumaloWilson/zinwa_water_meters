@@ -10,7 +10,7 @@ import userService from '../../services/userService/userService';
 
 // Set your Mapbox access token
 mapboxgl.accessToken = 'pk.eyJ1IjoiY2hlbmdla2UiLCJhIjoiY205aWk0dGE0MDJhazJpc2JoZWpkdHQ2eiJ9.92acewFg9hcRIFbpVD0Q4g';
-
+ 
 // Zimbabwe provinces and cities data
 const zimbabweData = {
   'Harare': ['Harare'],
@@ -188,6 +188,8 @@ export default function CreateNewPropertyModal({ setIsAddPropertyModalVisible, r
       latitude: parseFloat(values.latitude),
       longitude: parseFloat(values.longitude)
     };
+
+    console.log('Property Data:', propertyData);
 
     propertyService.registerProperty(propertyData)
       .then((response) => {
