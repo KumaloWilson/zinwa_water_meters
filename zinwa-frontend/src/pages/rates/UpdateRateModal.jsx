@@ -6,6 +6,7 @@ import rateService from '../../services/rateService/rateService';
 export default function UpdateRateModal({setIsEditDrawerVisible, refreshState, selectedRate , rateID}) {
   const [rateForm] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  
 console.log(selectedRate)
   // Initialize form with current rate data when component mounts or selectedRate changes
   useEffect(() => {
