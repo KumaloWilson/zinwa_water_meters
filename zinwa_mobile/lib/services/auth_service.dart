@@ -1,9 +1,9 @@
+import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:zinwa_mobile_app/models/user_model.dart';
 import 'package:zinwa_mobile_app/services/api_service.dart';
 import 'package:zinwa_mobile_app/utils/constants.dart';
-
 import '../utils/logs.dart';
 
 class AuthService extends GetxService {
@@ -17,7 +17,16 @@ class AuthService extends GetxService {
   User? get currentUser {
     final userData = _storage.read(Constants.userKey);
     if (userData != null) {
-      return User.fromJson(userData);
+      try {
+        // Handle case where userData might be stored as a string
+        if (userData is String) {
+          return User.fromJson(jsonDecode(userData));
+        }
+        return User.fromJson(userData);
+      } catch (e) {
+        DevLogs.logError("Error parsing user data: $e");
+        return null;
+      }
     }
     return null;
   }
@@ -52,10 +61,11 @@ class AuthService extends GetxService {
   // Login
   Future<User> login(String email, String password) async {
     try {
-      final response = await _apiService.post('/auth/login', data: {
+      // Properly encode the data as JSON
+      final response = await _apiService.post('/auth/login', data: jsonEncode({
         'email': email,
         'password': password,
-      });
+      }));
 
       final token = response.data['token'];
       final userData = response.data['user'];
@@ -71,10 +81,15 @@ class AuthService extends GetxService {
     }
   }
 
-  // Register
+  // Register function
   Future<User> register(Map<String, dynamic> userData) async {
     try {
-      final response = await _apiService.post('/auth/register', data: userData);
+      // Convert userData to a proper JSON string
+      DevLogs.logInfo("Sending registration data: ${jsonEncode(userData)}");
+
+      final response = await _apiService.post('/auth/register', data: jsonEncode(userData));
+
+      DevLogs.logInfo("Registration successful: ${response.data}");
 
       final token = response.data['token'];
       final user = response.data['user'];
@@ -85,8 +100,8 @@ class AuthService extends GetxService {
 
       return User.fromJson(user);
     } catch (e) {
-      DevLogs.logError(e.toString());
-      rethrow;
+      DevLogs.logError("Registration failed: ${e.toString()}");
+      throw Exception("Error registering user");
     }
   }
 
@@ -106,9 +121,9 @@ class AuthService extends GetxService {
   // Forgot password
   Future<void> forgotPassword(String email) async {
     try {
-      await _apiService.post('/auth/forgot-password', data: {
+      await _apiService.post('/auth/forgot-password', data: jsonEncode({
         'email': email,
-      });
+      }));
     } catch (e) {
       DevLogs.logError(e.toString());
       rethrow;
@@ -118,10 +133,10 @@ class AuthService extends GetxService {
   // Reset password
   Future<void> resetPassword(String token, String password) async {
     try {
-      await _apiService.post('/auth/reset-password', data: {
+      await _apiService.post('/auth/reset-password', data: jsonEncode({
         'token': token,
         'password': password,
-      });
+      }));
     } catch (e) {
       DevLogs.logError(e.toString());
       rethrow;
@@ -131,14 +146,13 @@ class AuthService extends GetxService {
   // Change password
   Future<void> changePassword(String currentPassword, String newPassword) async {
     try {
-      await _apiService.post('/auth/change-password', data: {
+      await _apiService.post('/auth/change-password', data: jsonEncode({
         'currentPassword': currentPassword,
         'newPassword': newPassword,
-      });
+      }));
     } catch (e) {
       DevLogs.logError(e.toString());
       rethrow;
     }
   }
 }
-
