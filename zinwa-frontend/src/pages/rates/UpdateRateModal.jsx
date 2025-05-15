@@ -24,6 +24,8 @@ console.log(selectedRate)
     }
   }, [selectedRate, rateForm]);
 
+
+  
   // Handle form submission
   const handleSubmit = (values) => {
     setLoading(true);
