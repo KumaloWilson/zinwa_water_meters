@@ -19,9 +19,10 @@ class UserService extends GetxService {
   }
 
   // Update user profile
-  Future<User> updateUserProfile(Map<String, dynamic> userData) async {
+  Future<User> updateUserProfile({required Map<String, dynamic> userData, required String uid}) async {
     try {
-      final response = await _apiService.put('/users/profile', data: userData);
+      final response = await _apiService.put('/users/$uid', data: userData);
+
       return User.fromJson(response.data);
     } catch (e) {
       DevLogs.logError(e.toString());
