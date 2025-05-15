@@ -164,14 +164,14 @@ export default function PaymentManagement() {
     {
       title: 'User',
       key: 'user',
-      render: (_, record) => `${record.user?.firstName} ${record.user?.lastName}`
+      render: (_, record) => `${record?.user?.firstName != null ? record.user.firstName : "NA"} ${record?.user?.lastName != null ? record.user.lastName : "NA"}`,
     },
     {
       title: 'Amount',
       dataIndex: 'amount',
       key: 'amount',
       render: (val) => `$${parseFloat(val).toFixed(2)}`,
-      sorter: (a, b) => a.amount - b.amount
+      sorter: (a, b) => a?.amount - b?.amount
     },
     {
       title: 'Payment Method',
