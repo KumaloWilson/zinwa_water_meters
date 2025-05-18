@@ -15,9 +15,9 @@ class RegisterView extends GetView<AuthController> {
         child: Obx(() => Stack(
           children: [
             _buildRegisterForm(),
-            if (controller.isLoading.value)
+            if (controller.isRegistering.value)
               Container(
-                color: Colors.black.withOpacity(0.3), // Fixed .withValues(alpha: .3) to .withOpacity(0.3)
+                color: Colors.black.withOpacity(0.3),
                 child: const Center(
                   child: CircularProgressIndicator(),
                 ),
@@ -33,7 +33,7 @@ class RegisterView extends GetView<AuthController> {
       child: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Form(
-          key: controller.registerFormKey, // Use the controller's form key instead of local _formKey
+          key: controller.registerFormKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -90,7 +90,7 @@ class RegisterView extends GetView<AuthController> {
               ),
               const SizedBox(height: 16),
               CustomTextField(
-                controller: controller.registerEmailController, // Changed from emailController to registerEmailController
+                controller: controller.registerEmailController,
                 labelText: 'Email',
                 prefixIcon: Icons.email_outlined,
                 keyboardType: TextInputType.emailAddress,
@@ -119,18 +119,18 @@ class RegisterView extends GetView<AuthController> {
               ),
               const SizedBox(height: 16),
               Obx(() => CustomTextField(
-                controller: controller.registerPasswordController, // Changed from passwordController to registerPasswordController
+                controller: controller.registerPasswordController,
                 labelText: 'Password',
                 prefixIcon: Icons.lock_outline,
-                obscureText: !controller.obscureRegisterPassword.value, // Changed from obscurePassword to obscureRegisterPassword
+                obscureText: !controller.obscureRegisterPassword.value,
                 suffixIcon: IconButton(
                   icon: Icon(
-                    controller.obscureRegisterPassword.value // Changed from obscurePassword to obscureRegisterPassword
+                    controller.obscureRegisterPassword.value
                         ? Icons.visibility_off
                         : Icons.visibility,
                     color: Colors.grey,
                   ),
-                  onPressed: () => controller.toggleRegisterPasswordVisibility(), // Changed from togglePasswordVisibility to toggleRegisterPasswordVisibility
+                  onPressed: () => controller.toggleRegisterPasswordVisibility(),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -161,7 +161,7 @@ class RegisterView extends GetView<AuthController> {
                   if (value == null || value.isEmpty) {
                     return 'Please confirm your password';
                   }
-                  if (value != controller.registerPasswordController.text) { // Changed from passwordController to registerPasswordController
+                  if (value != controller.registerPasswordController.text) {
                     return 'Passwords do not match';
                   }
                   return null;

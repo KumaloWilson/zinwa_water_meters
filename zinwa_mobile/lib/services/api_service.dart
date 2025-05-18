@@ -115,9 +115,26 @@ class ApiService extends Get.GetxService {
     } else if (e.type == DioExceptionType.connectionError) {
       throw Exception('No internet connection. Please check your network settings.');
     } else {
-      final errorMessage = e.response?.data?['message'] ?? 'An unexpected error occurred';
+      // Extract custom error message
+      final data = e.response?.data;
+      String errorMessage = 'An unexpected error occurred';
+
+      if (data is Map<String, dynamic>) {
+        if (data.containsKey('message') && data['message'] is String) {
+          errorMessage = data['message'];
+        } else if (data.containsKey('error') && data['error'] is String) {
+          errorMessage = data['error'];
+        } else if (data.containsKey('errors') && data['errors'] is Map) {
+          // Get first error from errors object
+          final firstKey = (data['errors'] as Map).keys.first;
+          final firstError = (data['errors'][firstKey] as List).first;
+          errorMessage = firstError.toString();
+        }
+      }
+
       throw Exception(errorMessage);
     }
   }
+
 }
 

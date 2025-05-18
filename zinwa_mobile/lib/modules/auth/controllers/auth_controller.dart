@@ -80,10 +80,7 @@ class AuthController extends GetxController {
           passwordController.text,
         );
 
-        // Clear form
-        emailController.clear();
-        passwordController.clear();
-
+        // Don't clear form here - navigate first
         // Navigate to home
         Get.offAllNamed(AppRoutes.HOME);
       } catch (e) {
@@ -97,11 +94,6 @@ class AuthController extends GetxController {
   // Register function
   Future<void> register() async {
     if (registerFormKey.currentState!.validate()) {
-      if (registerPasswordController.text != confirmPasswordController.text) {
-        UIHelpers.showErrorSnackbar('Registration Failed', 'Passwords do not match');
-        return;
-      }
-
       try {
         isRegistering.value = true;
 
@@ -116,15 +108,7 @@ class AuthController extends GetxController {
 
         await _authService.register(userData);
 
-
-        // Clear form
-        firstNameController.clear();
-        lastNameController.clear();
-        registerEmailController.clear();
-        registerPasswordController.clear();
-        confirmPasswordController.clear();
-        phoneController.clear();
-
+        // Don't clear form here, let the user be redirected first
         // Navigate to home
         Get.offAllNamed(AppRoutes.HOME);
       } catch (e) {
@@ -145,16 +129,13 @@ class AuthController extends GetxController {
           forgotPasswordEmailController.text.trim(),
         );
 
-        // Clear form
-        forgotPasswordEmailController.clear();
-
         // Show success message
         UIHelpers.showSuccessSnackbar(
           'Password Reset Email Sent',
           'Please check your email for instructions to reset your password.',
         );
 
-        // Navigate back to login
+        // Navigate back to login first, don't clear form here
         Get.back();
       } catch (e) {
         UIHelpers.showErrorSnackbar('Password Reset Failed', e.toString());
@@ -164,4 +145,3 @@ class AuthController extends GetxController {
     }
   }
 }
-

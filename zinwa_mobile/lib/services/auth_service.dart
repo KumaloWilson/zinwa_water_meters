@@ -101,7 +101,7 @@ class AuthService extends GetxService {
       return User.fromJson(user);
     } catch (e) {
       DevLogs.logError("Registration failed: ${e.toString()}");
-      throw Exception("Error registering user");
+      throw Exception(e.toString());
     }
   }
 
