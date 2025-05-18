@@ -45,15 +45,15 @@ class AuthController extends GetxController {
   @override
   void onClose() {
     // Dispose controllers
-    emailController.dispose();
-    passwordController.dispose();
-    firstNameController.dispose();
-    lastNameController.dispose();
-    registerEmailController.dispose();
-    registerPasswordController.dispose();
-    confirmPasswordController.dispose();
-    phoneController.dispose();
-    forgotPasswordEmailController.dispose();
+    // emailController.dispose();
+    // passwordController.dispose();
+    // firstNameController.dispose();
+    // lastNameController.dispose();
+    // registerEmailController.dispose();
+    // registerPasswordController.dispose();
+    // confirmPasswordController.dispose();
+    // phoneController.dispose();
+    // forgotPasswordEmailController.dispose();
     super.onClose();
   }
 
