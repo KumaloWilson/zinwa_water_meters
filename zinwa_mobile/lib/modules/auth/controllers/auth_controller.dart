@@ -35,6 +35,7 @@ class AuthController extends GetxController {
   final RxBool isLoading = false.obs;
   final RxBool isRegistering = false.obs;
   final RxBool isSendingResetEmail = false.obs;
+  final RxBool resetEmailSent = false.obs;
 
   // Password visibility
   final RxBool obscurePassword = true.obs;
@@ -67,6 +68,11 @@ class AuthController extends GetxController {
 
   void toggleConfirmPasswordVisibility() {
     obscureConfirmPassword.value = !obscureConfirmPassword.value;
+  }
+
+  // Reset forgot password form state
+  void resetForgotPasswordForm() {
+    resetEmailSent.value = false;
   }
 
   // Login function
@@ -129,14 +135,9 @@ class AuthController extends GetxController {
           forgotPasswordEmailController.text.trim(),
         );
 
-        // Show success message
-        UIHelpers.showSuccessSnackbar(
-          'Password Reset Email Sent',
-          'Please check your email for instructions to reset your password.',
-        );
+        // Mark as sent - don't navigate away yet
+        resetEmailSent.value = true;
 
-        // Navigate back to login first, don't clear form here
-        Get.back();
       } catch (e) {
         UIHelpers.showErrorSnackbar('Password Reset Failed', e.toString());
       } finally {

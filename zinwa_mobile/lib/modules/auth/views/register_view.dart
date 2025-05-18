@@ -122,10 +122,10 @@ class RegisterView extends GetView<AuthController> {
                 controller: controller.registerPasswordController,
                 labelText: 'Password',
                 prefixIcon: Icons.lock_outline,
-                obscureText: !controller.obscureRegisterPassword.value,
+                obscureText: controller.obscureRegisterPassword.value,
                 suffixIcon: IconButton(
                   icon: Icon(
-                    controller.obscureRegisterPassword.value
+                    !controller.obscureRegisterPassword.value
                         ? Icons.visibility_off
                         : Icons.visibility,
                     color: Colors.grey,
@@ -147,10 +147,10 @@ class RegisterView extends GetView<AuthController> {
                 controller: controller.confirmPasswordController,
                 labelText: 'Confirm Password',
                 prefixIcon: Icons.lock_outline,
-                obscureText: !controller.obscureConfirmPassword.value,
+                obscureText: controller.obscureConfirmPassword.value,
                 suffixIcon: IconButton(
                   icon: Icon(
-                    controller.obscureConfirmPassword.value
+                    !controller.obscureConfirmPassword.value
                         ? Icons.visibility_off
                         : Icons.visibility,
                     color: Colors.grey,
