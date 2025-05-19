@@ -21,6 +21,7 @@ import adminRoutes from "./routes/adminRoutes"
 import notificationRoutes from "./routes/notificationRoutes"
 import rateRoutes from "./routes/rateRoutes";
 import meterReadingRoutes from "./routes/meterReadingRoutes"
+import iotDeviceRoutes from "./routes/iotDeviceRoutes"
 import { logger } from "./utils/logger"
 
 // Load environment variables
@@ -78,6 +79,7 @@ app.use("/api/admin", adminRoutes)
 app.use("/api/notifications", notificationRoutes)
 app.use("/api/meter-readings", meterReadingRoutes)
 app.use("/api/rates", rateRoutes)
+app.use("/api/iotDevice", iotDeviceRoutes)
 
 
 // Health check endpoint
