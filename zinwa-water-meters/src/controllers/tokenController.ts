@@ -8,11 +8,18 @@ import { Op } from "sequelize"
 
 // Generate unique token
 const generateToken = (): string => {
-  // Generate a 12-character alphanumeric token
-  return (
-    Math.random().toString(36).substring(2, 8).toUpperCase() + Math.random().toString(36).substring(2, 8).toUpperCase()
-  )
-}
+  const chars = '0123456ABC';
+  const tokenLength = 16;
+  let token = '';
+
+  for (let i = 0; i < tokenLength; i++) {
+    const randomIndex = Math.floor(Math.random() * chars.length);
+    token += chars[randomIndex];
+  }
+
+  return token;
+};
+
 
 // Calculate units based on amount and property type
 const calculateUnits = async (amount: number, propertyType: string): Promise<number> => {
