@@ -8,7 +8,7 @@ import { Op } from "sequelize"
 
 // Generate unique token
 const generateToken = (): string => {
-  const chars = '0123456ABC';
+  const chars = '0123456';
   const tokenLength = 16;
   let token = '';
 
