@@ -907,8 +907,8 @@ Properties (1) ──── (N) Rates
 2. **Application Deployment**
    \`\`\`bash
    # Clone repository
-   git clone https://github.com/zinwa/water-meter-system.git
-   cd water-meter-system
+   git clone https://github.com/kumalowilson/zinwa_water_meters.git
+   cd zinwa_water_meters
 
    # Install dependencies
    npm ci --production
@@ -1081,7 +1081,7 @@ We welcome contributions to the ZINWA Water Meter System! Please follow these gu
 
 1. **Fork the Repository**
    \`\`\`bash
-   git clone https://github.com/your-username/zinwa-water-meter-system.git
+   git clone https://github.com/kumalowilson/zinwa-water-meters.git
    cd zinwa-water-meter-system
    \`\`\`
 
@@ -1261,13 +1261,13 @@ flutter run --verbose
 - **Documentation**: Check this README and API docs
 - **Issues**: Create GitHub issue for bugs
 - **Discussions**: Use GitHub discussions for questions
-- **Email**: support@zinwa.co.zw
+- **Email**: kumalowilson900@gmail.com
 
 ### Contact Information
 
-- **Technical Support**: tech-support@zinwa.co.zw
-- **Business Inquiries**: info@zinwa.co.zw
-- **Emergency**: +263-4-791631
+- **Technical Support**: kumalowilson900@gmail.com
+- **Business Inquiries**: kumalowilson900@gmail.com
+- **Emergency**: +263-77 191 0924
 
 ### Support Hours
 
