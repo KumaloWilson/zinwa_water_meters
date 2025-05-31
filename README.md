@@ -300,7 +300,7 @@ The API server will be available at `http://localhost:5000`
 1. **Using Docker Compose**
    \`\`\`bash
    # Clone repository
-   git clone https://github.com/zinwa/water-meter-system.git
+   git clone [https://github.com/zinwa/water-meter-system.git](https://github.com/kumalowilson/zinwa_water_meters.git)
    cd water-meter-system
 
    # Copy environment file
