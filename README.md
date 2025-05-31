@@ -221,7 +221,7 @@ Administrators can:
 
 1. **Clone the Repository**
    \`\`\`bash
-   git clone https://github.com/zinwa/water-meter-system.git
+   git clone https://github.com/kumalowilson/zinwa_water_meters.git
    cd water-meter-system
    \`\`\`
 
